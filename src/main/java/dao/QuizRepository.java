@@ -1,6 +1,7 @@
 package dao;
 
 import models.Category;
+import models.Question;
 import models.Quiz;
 import models.User;
 import org.hibernate.Session;
@@ -77,6 +78,15 @@ public class QuizRepository {
             Query<Quiz> query = session.createQuery(queryString, Quiz.class);
             query.setParameter("title", "%" +title.toLowerCase() + "%");
             return query.list();
+        }
+        catch (Exception e){
+            e.printStackTrace(err);
+            return Collections.emptyList();
+        }
+    }
+    public List<Quiz> findAllQuizzes(){
+        try(Session session = sessionFactory.openSession()){
+            return session.createQuery("from Quiz", Quiz.class).list();
         }
         catch (Exception e){
             e.printStackTrace(err);
