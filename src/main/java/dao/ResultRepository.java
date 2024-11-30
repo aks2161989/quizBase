@@ -25,6 +25,15 @@ public class ResultRepository {
         this.sessionFactory = sessionFactory;
     }
 
+    public Result findById(long id){
+        try(Session session = sessionFactory.openSession()){
+            return session.get(Result.class, id);
+        }
+        catch (Exception e){
+            e.printStackTrace(err);
+            return null;
+        }
+    }
     public List<Result> findByUser(User user){
         if (user == null) {
             err.println("User is null");

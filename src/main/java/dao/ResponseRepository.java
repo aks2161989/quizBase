@@ -3,6 +3,7 @@ package dao;
 import models.Question;
 import models.Response;
 import models.Result;
+import models.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -23,6 +24,15 @@ public class ResponseRepository {
         this.sessionFactory = sessionFactory;
     }
 
+    public Response findById(long id){
+        try(Session session = sessionFactory.openSession()){
+            return session.get(Response.class, id);
+        }
+        catch (Exception e){
+            e.printStackTrace(err);
+            return null;
+        }
+    }
     public List<Response> findByResult(Result result){
         if (result == null) {
             err.println("Result is null");

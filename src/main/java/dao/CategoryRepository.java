@@ -1,6 +1,7 @@
 package dao;
 
 import models.Category;
+import models.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,15 @@ public class CategoryRepository {
         this.sessionFactory = sessionFactory;
     }
 
+    public Category findById(long id){
+        try(Session session = sessionFactory.openSession()){
+            return session.get(Category.class, id);
+        }
+        catch (Exception e){
+            e.printStackTrace(err);
+            return null;
+        }
+    }
     public Optional<Category> findByName(String name){
         try(Session session = sessionFactory.openSession()){
             Category category = session.createQuery("from Category where name = :name", Category.class).setParameter("name", name).uniqueResult();

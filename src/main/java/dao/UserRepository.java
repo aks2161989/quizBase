@@ -20,6 +20,15 @@ public class UserRepository {
         this.sessionFactory = sessionFactory;
     }
 
+    public User findById(long id){
+        try(Session session = sessionFactory.openSession()){
+            return session.get(User.class, id);
+        }
+        catch (Exception e){
+            e.printStackTrace(err);
+            return null;
+        }
+    }
     public Optional<User> findByUsername(String username){
 
         try (Session session = sessionFactory.openSession()) {

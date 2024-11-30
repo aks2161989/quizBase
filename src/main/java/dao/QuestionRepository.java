@@ -2,6 +2,7 @@ package dao;
 
 import models.Question;
 import models.Quiz;
+import models.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -23,6 +24,15 @@ public class QuestionRepository {
         this.sessionFactory = sessionFactory;
     }
 
+    public Question findById(long id){
+        try(Session session = sessionFactory.openSession()){
+            return session.get(Question.class, id);
+        }
+        catch (Exception e){
+            e.printStackTrace(err);
+            return null;
+        }
+    }
     public List<Question> findByQuiz(Quiz quiz){
         if (quiz == null) {
             err.println("Quiz is null");

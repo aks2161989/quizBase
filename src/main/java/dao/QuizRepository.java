@@ -25,6 +25,15 @@ public class QuizRepository {
         this.sessionFactory = sessionFactory;
     }
 
+    public Quiz findById(long id){
+        try(Session session = sessionFactory.openSession()){
+            return session.get(Quiz.class, id);
+        }
+        catch (Exception e){
+            e.printStackTrace(err);
+            return null;
+        }
+    }
     public List<Quiz> findByCategory(Category category){
         if (category == null) {
             err.println("Category is null");
