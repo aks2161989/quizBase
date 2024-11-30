@@ -1,7 +1,59 @@
 package dao;
 
+import models.Question;
+import models.Response;
+import models.Result;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.Collections;
+import java.util.List;
+
+import static java.lang.System.err;
 
 @Repository
 public class ResponseRepository {
+    private final SessionFactory sessionFactory;
+
+    @Autowired
+    public ResponseRepository(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
+
+    public List<Response> findByResult(Result result){
+        if (result == null) {
+            err.println("Result is null");
+            return Collections.emptyList();
+        }
+        try(Session session = sessionFactory.openSession()){
+            String queryString = "from Response where result = :result";
+            Query<Response> query = session.createQuery(queryString, Response.class);
+            query.setParameter("result", result);
+            return query.list();
+        }
+        catch (Exception e){
+            e.printStackTrace(err);
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Response> findByQuestion(Question question){
+        if (question == null) {
+            err.println("Question is null");
+            return Collections.emptyList();
+        }
+        try(Session session = sessionFactory.openSession()){
+            String queryString = "from Response where question = :question";
+            Query<Response> query = session.createQuery(queryString, Response.class);
+            query.setParameter("question", question);
+            return query.list();
+        }
+        catch (Exception e){
+            e.printStackTrace(err);
+            return Collections.emptyList();
+        }
+    }
 }
