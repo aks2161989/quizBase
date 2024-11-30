@@ -49,4 +49,13 @@ public class QuestionRepository {
             return Collections.emptyList();
         }
     }
+    public List<Question> findAllQuestions(){
+        try(Session session = sessionFactory.openSession()){
+            return session.createQuery("from Question", Question.class).list();
+        }
+        catch (Exception e){
+            e.printStackTrace(err);
+            return Collections.emptyList();
+        }
+    }
 }

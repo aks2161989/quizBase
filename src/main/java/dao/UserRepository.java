@@ -6,6 +6,8 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static java.lang.System.err;
@@ -56,6 +58,16 @@ public class UserRepository {
     }
     public boolean existsByEmail(String email){
         return findByEmail(email).isPresent();
+    }
+
+    public List<User> findAllUsers(){
+        try(Session session = sessionFactory.openSession()){
+            return session.createQuery("from User", User.class).list();
+        }
+        catch (Exception e){
+            e.printStackTrace(err);
+            return Collections.emptyList();
+        }
     }
 
 }
