@@ -1,9 +1,7 @@
 package models;
 
 import jakarta.persistence.*;
-import org.hibernate.Length;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,7 +25,7 @@ public class Quiz {
 
     @ManyToOne
     @JoinColumn(name = "creator_id", nullable = false)
-    private User Creator;
+    private User creator;
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions;
@@ -42,7 +40,7 @@ public class Quiz {
         this.title = title;
         this.description = description;
         this.category = category;
-        Creator = creator;
+        this.creator = creator;
         this.created_date = created_date;
     }
 
@@ -79,11 +77,11 @@ public class Quiz {
     }
 
     public User getCreator() {
-        return Creator;
+        return creator;
     }
 
     public void setCreator(User creator) {
-        Creator = creator;
+        this.creator = creator;
     }
 
     public List<Question> getQuestions() {
@@ -109,7 +107,7 @@ public class Quiz {
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", category=" + category +
-                ", Creator=" + Creator +
+                ", Creator=" + creator +
                 ", questions=" + questions +
                 ", created_date=" + created_date +
                 '}';
