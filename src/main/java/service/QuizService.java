@@ -30,12 +30,24 @@ public class QuizService {
         }
         return quizRepository.findByCreator(creator);
     }
+    public List<Quiz> findQuizzesByCreator(Long creatorId) {
+        if (creatorId == null) {
+            throw new IllegalArgumentException("Creator ID must not be null");
+        }
+        return quizRepository.findByCreator(creatorId);
+    }
 
     public List<Quiz> findQuizzesByCategory(Category category) {
         if (category == null) {
             throw new IllegalArgumentException("Category must not be null");
         }
         return quizRepository.findByCategory(category);
+    }
+    public List<Quiz> findQuizzesByCategory(Long categoryId) {
+        if (categoryId == null) {
+            throw new IllegalArgumentException("Category Id must not be null");
+        }
+        return quizRepository.findByCategory(categoryId);
     }
 
     public List<Quiz> searchQuizzesByTitle(String title) {

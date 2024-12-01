@@ -51,6 +51,22 @@ public class QuizRepository {
             return Collections.emptyList();
         }
     }
+    public List<Quiz> findByCategory(Long categoryId){
+        if (categoryId == null) {
+            err.println("Category ID is null");
+            return Collections.emptyList();
+        }
+        try(Session session = sessionFactory.openSession()){
+            String queryString = "from Quiz where category.id = :categoryId";
+            Query<Quiz> query = session.createQuery(queryString, Quiz.class);
+            query.setParameter("categoryId", categoryId);
+            return query.list();
+        }
+        catch (Exception e){
+            e.printStackTrace(err);
+            return Collections.emptyList();
+        }
+    }
     public List<Quiz> findByCreator(User creator){
 
         if (creator == null) {
@@ -61,6 +77,23 @@ public class QuizRepository {
             String queryString = "from Quiz where creator = :creator";
             Query<Quiz> query = session.createQuery(queryString, Quiz.class);
             query.setParameter("creator", creator);
+            return query.list();
+        }
+        catch (Exception e){
+            e.printStackTrace(err);
+            return Collections.emptyList();
+        }
+    }
+    public List<Quiz> findByCreator(Long creatorId){
+
+        if (creatorId == null) {
+            err.println("Creator is null");
+            return Collections.emptyList();
+        }
+        try(Session session = sessionFactory.openSession()){
+            String queryString = "from Quiz where creator.id = :creatorId";
+            Query<Quiz> query = session.createQuery(queryString, Quiz.class);
+            query.setParameter("creatorId", creatorId);
             return query.list();
         }
         catch (Exception e){
