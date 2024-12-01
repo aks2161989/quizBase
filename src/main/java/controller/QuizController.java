@@ -50,7 +50,7 @@ public class QuizController {
         List<Quiz> quizzes = quizService.searchQuizzesByTitle(title);
         return quizzes.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(quizzes);
     }
-
+    
     @GetMapping
     public ResponseEntity<List<Quiz>> getAllQuizzes() {
         List<Quiz> quizzes = quizService.findAllQuizzes();
