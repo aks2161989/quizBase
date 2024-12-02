@@ -49,6 +49,22 @@ public class QuestionRepository {
             return Collections.emptyList();
         }
     }
+    public List<Question> findByQuiz(Long quizId){
+        if (quizId == null) {
+            err.println("Quiz ID is null");
+            return Collections.emptyList();
+        }
+        try(Session session = sessionFactory.openSession()){
+            String queryString = "from Question where quiz.id = :quizId";
+            Query<Question> query = session.createQuery(queryString, Question.class);
+            query.setParameter("quizId", quizId);
+            return query.list();
+        }
+        catch (Exception e){
+            e.printStackTrace(err);
+            return Collections.emptyList();
+        }
+    }
     public List<Question> findAllQuestions(){
         try(Session session = sessionFactory.openSession()){
             return session.createQuery("from Question", Question.class).list();

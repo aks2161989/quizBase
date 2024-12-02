@@ -29,7 +29,12 @@ public class QuestionService {
         }
         return questionRepository.findByQuiz(quiz);
     }
-
+    public List<Question> findQuestionsByQuiz(Long quizId) {
+        if (quizId == null) {
+            throw new IllegalArgumentException("Quiz ID must not be null");
+        }
+        return questionRepository.findByQuiz(quizId);
+    }
     public List<Question> findAllQuestions() {
         List<Question> questions = questionRepository.findAllQuestions();
         return questions != null ? questions : Collections.emptyList();
