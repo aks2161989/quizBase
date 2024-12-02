@@ -46,7 +46,31 @@ CREATE TABLE IF NOT EXISTS options (
     FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
     );
 
--- Delete existing data (for re-initialization)
+-- Create Table: Responses
+CREATE TABLE IF NOT EXISTS responses (
+                                         id INT PRIMARY KEY AUTO_INCREMENT,
+                                         user_id INT NOT NULL,
+                                         question_id INT NOT NULL,
+                                         selected_option_id INT NOT NULL,
+                                         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE,
+    FOREIGN KEY (selected_option_id) REFERENCES options(id) ON DELETE CASCADE
+    );
+
+-- Create Table: Results
+CREATE TABLE IF NOT EXISTS results (
+                                       id INT PRIMARY KEY AUTO_INCREMENT,
+                                       user_id INT NOT NULL,
+                                       quiz_id INT NOT NULL,
+                                       score INT NOT NULL,
+                                       max_score INT NOT NULL,
+                                       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE
+    );
+
+-- Delete existing data (if reinitializing the database)
+DELETE FROM responses;
+DELETE FROM results;
 DELETE FROM options;
 DELETE FROM questions;
 DELETE FROM quizzes;
@@ -54,6 +78,8 @@ DELETE FROM users;
 DELETE FROM categories;
 
 -- Reset AUTO_INCREMENT values (optional)
+ALTER TABLE responses AUTO_INCREMENT = 1;
+ALTER TABLE results AUTO_INCREMENT = 1;
 ALTER TABLE options AUTO_INCREMENT = 1;
 ALTER TABLE questions AUTO_INCREMENT = 1;
 ALTER TABLE quizzes AUTO_INCREMENT = 1;
@@ -97,47 +123,38 @@ INSERT INTO options (text, question_id, is_correct) VALUES
                                                         ('Vincent van Gogh', 1, FALSE),
                                                         ('Michelangelo', 1, FALSE),
                                                         ('Raphael', 1, FALSE),
-
                                                         ('Vincent van Gogh', 2, TRUE),
                                                         ('Claude Monet', 2, FALSE),
                                                         ('Paul Cézanne', 2, FALSE),
                                                         ('Edgar Degas', 2, FALSE),
-
                                                         ('Michelangelo', 3, TRUE),
                                                         ('Donatello', 3, FALSE),
                                                         ('Raphael', 3, FALSE),
                                                         ('Leonardo da Vinci', 3, FALSE),
-
                                                         ('Salvador Dalí', 4, TRUE),
                                                         ('Joan Miró', 4, FALSE),
                                                         ('Pablo Picasso', 4, FALSE),
                                                         ('Marc Chagall', 4, FALSE),
-
                                                         ('Leonardo da Vinci', 5, TRUE),
                                                         ('Caravaggio', 5, FALSE),
                                                         ('Sandro Botticelli', 5, FALSE),
                                                         ('Raphael', 5, FALSE),
-
                                                         ('Johannes Vermeer', 6, TRUE),
                                                         ('Rembrandt', 6, FALSE),
                                                         ('Frans Hals', 6, FALSE),
                                                         ('Jan Steen', 6, FALSE),
-
                                                         ('Sandro Botticelli', 7, TRUE),
                                                         ('Titian', 7, FALSE),
                                                         ('Giorgione', 7, FALSE),
                                                         ('Leonardo da Vinci', 7, FALSE),
-
                                                         ('Pablo Picasso', 8, TRUE),
                                                         ('Georges Braque', 8, FALSE),
                                                         ('Joan Miró', 8, FALSE),
                                                         ('Henri Matisse', 8, FALSE),
-
                                                         ('Grant Wood', 9, TRUE),
                                                         ('Edward Hopper', 9, FALSE),
                                                         ('Norman Rockwell', 9, FALSE),
                                                         ('Andrew Wyeth', 9, FALSE),
-
                                                         ('John Constable', 10, TRUE),
                                                         ('J.M.W. Turner', 10, FALSE),
                                                         ('Thomas Gainsborough', 10, FALSE),
@@ -162,47 +179,38 @@ INSERT INTO options (text, question_id, is_correct) VALUES
                                                         ('Brazil', 11, FALSE),
                                                         ('Italy', 11, FALSE),
                                                         ('Argentina', 11, FALSE),
-
                                                         ('Miroslav Klose', 12, TRUE),
                                                         ('Ronaldo', 12, FALSE),
                                                         ('Pelé', 12, FALSE),
                                                         ('Just Fontaine', 12, FALSE),
-
                                                         ('1966', 13, TRUE),
                                                         ('1958', 13, FALSE),
                                                         ('1970', 13, FALSE),
                                                         ('1990', 13, FALSE),
-
                                                         ('Pelé', 14, TRUE),
                                                         ('Diego Maradona', 14, FALSE),
                                                         ('Zinedine Zidane', 14, FALSE),
                                                         ('Franz Beckenbauer', 14, FALSE),
-
                                                         ('Brazil', 15, TRUE),
                                                         ('Germany', 15, FALSE),
                                                         ('Italy', 15, FALSE),
                                                         ('France', 15, FALSE),
-
                                                         ('Hakan Şükür', 16, TRUE),
                                                         ('Cristiano Ronaldo', 16, FALSE),
                                                         ('Diego Maradona', 16, FALSE),
                                                         ('Lionel Messi', 16, FALSE),
-
                                                         ('Germany', 17, TRUE),
                                                         ('Netherlands', 17, FALSE),
                                                         ('Argentina', 17, FALSE),
                                                         ('Italy', 17, FALSE),
-
                                                         ('1998', 18, TRUE),
                                                         ('2018', 18, FALSE),
                                                         ('2014', 18, FALSE),
                                                         ('2002', 18, FALSE),
-
                                                         ('Jabulani', 19, TRUE),
                                                         ('Brazuca', 19, FALSE),
                                                         ('Telstar', 19, FALSE),
                                                         ('Teamgeist', 19, FALSE),
-
                                                         ('2018', 20, TRUE),
                                                         ('2014', 20, FALSE),
                                                         ('2010', 20, FALSE),
