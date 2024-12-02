@@ -57,4 +57,7 @@ public class ResultService {
         }
         return resultRepository.findTop10ByQuizOrderByScoreDesc(quizId);
     }
+    public void createResult(Result result){
+        resultRepository.save(result);
+    }
 }

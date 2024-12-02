@@ -2,6 +2,7 @@ package service;
 
 import dao.QuizRepository;
 import models.Category;
+import models.Question;
 import models.Quiz;
 import models.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,5 +61,8 @@ public class QuizService {
     public List<Quiz> findAllQuizzes() {
         List<Quiz> quizzes = quizRepository.findAllQuizzes();
         return quizzes != null ? quizzes : Collections.emptyList();
+    }
+    public void createQuiz(Quiz quiz){
+        quizRepository.save(quiz);
     }
 }

@@ -55,4 +55,7 @@ public class UserService {
         List<User> users = userRepository.findAllUsers();
         return users != null ? users : Collections.emptyList();
     }
+    public void createUser(User user){
+        userRepository.save(user);
+    }
 }

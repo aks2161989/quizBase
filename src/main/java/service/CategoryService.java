@@ -33,4 +33,7 @@ public class CategoryService {
         List<Category> categories = categoryRepository.findAllCategories();
         return categories != null ? categories : Collections.emptyList();
     }
+    public void createCategory(Category category){
+        categoryRepository.save(category);
+    }
 }

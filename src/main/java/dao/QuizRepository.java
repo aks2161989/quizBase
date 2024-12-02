@@ -6,6 +6,7 @@ import models.Quiz;
 import models.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -124,6 +125,19 @@ public class QuizRepository {
         catch (Exception e){
             e.printStackTrace(err);
             return Collections.emptyList();
+        }
+    }
+    public void save(Quiz quiz){
+        Transaction transaction = null;
+        try(Session session = sessionFactory.openSession()){
+            transaction = session.beginTransaction();
+            session.saveOrUpdate(quiz);
+            transaction.commit();
+        }catch (Exception e){
+            if(transaction != null){
+                transaction.rollback();
+            }
+            e.printStackTrace();
         }
     }
 

@@ -34,4 +34,7 @@ public class OptionService {
         }
         return optionRepository.findByQuestion(questionId);
     }
+    public void createOption(Option option){
+        optionRepository.save(option);
+    }
 }

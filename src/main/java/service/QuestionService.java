@@ -39,4 +39,7 @@ public class QuestionService {
         List<Question> questions = questionRepository.findAllQuestions();
         return questions != null ? questions : Collections.emptyList();
     }
+    public void createQuestion(Question question){
+        questionRepository.save(question);
+    }
 }

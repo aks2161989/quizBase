@@ -1,8 +1,10 @@
 package dao;
 
+import models.Question;
 import models.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -67,6 +69,19 @@ public class UserRepository {
         catch (Exception e){
             e.printStackTrace(err);
             return Collections.emptyList();
+        }
+    }
+    public void save(User user){
+        Transaction transaction = null;
+        try(Session session = sessionFactory.openSession()){
+            transaction = session.beginTransaction();
+            session.saveOrUpdate(user);
+            transaction.commit();
+        }catch (Exception e){
+            if(transaction != null){
+                transaction.rollback();
+            }
+            e.printStackTrace();
         }
     }
 

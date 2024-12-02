@@ -46,4 +46,7 @@ public class ResponseService {
         }
         return responseRepository.findByQuestion(questionId);
     }
+    public void createResponse(Response response){
+        responseRepository.save(response);
+    }
 }
