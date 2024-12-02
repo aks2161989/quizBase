@@ -28,10 +28,22 @@ public class ResponseService {
         }
         return responseRepository.findByResult(result);
     }
+    public List<Response> findResponsesByResult(Long resultId) {
+        if (resultId == null) {
+            throw new IllegalArgumentException("Result ID must not be null");
+        }
+        return responseRepository.findByResult(resultId);
+    }
     public List<Response> findResponsesByQuestion(Question question) {
         if (question == null) {
             throw new IllegalArgumentException("Question must not be null");
         }
         return responseRepository.findByQuestion(question);
+    }
+    public List<Response> findResponsesByQuestion(Long questionId) {
+        if (questionId == null) {
+            throw new IllegalArgumentException("Question ID must not be null");
+        }
+        return responseRepository.findByQuestion(questionId);
     }
 }

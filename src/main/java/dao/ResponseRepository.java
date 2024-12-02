@@ -49,6 +49,22 @@ public class ResponseRepository {
             return Collections.emptyList();
         }
     }
+    public List<Response> findByResult(Long resultId){
+        if (resultId == null) {
+            err.println("Result ID is null");
+            return Collections.emptyList();
+        }
+        try(Session session = sessionFactory.openSession()){
+            String queryString = "from Response where result.id = :resultId";
+            Query<Response> query = session.createQuery(queryString, Response.class);
+            query.setParameter("resultId", resultId);
+            return query.list();
+        }
+        catch (Exception e){
+            e.printStackTrace(err);
+            return Collections.emptyList();
+        }
+    }
 
     public List<Response> findByQuestion(Question question){
         if (question == null) {
@@ -59,6 +75,22 @@ public class ResponseRepository {
             String queryString = "from Response where question = :question";
             Query<Response> query = session.createQuery(queryString, Response.class);
             query.setParameter("question", question);
+            return query.list();
+        }
+        catch (Exception e){
+            e.printStackTrace(err);
+            return Collections.emptyList();
+        }
+    }
+    public List<Response> findByQuestion(Long questionId){
+        if (questionId == null) {
+            err.println("Question ID is null");
+            return Collections.emptyList();
+        }
+        try(Session session = sessionFactory.openSession()){
+            String queryString = "from Response where question.id = :questionId";
+            Query<Response> query = session.createQuery(queryString, Response.class);
+            query.setParameter("questionId", questionId);
             return query.list();
         }
         catch (Exception e){
