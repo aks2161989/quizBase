@@ -50,6 +50,22 @@ public class ResultRepository {
             return Collections.emptyList();
         }
     }
+    public List<Result> findByUser(Long userId){
+        if (userId == null) {
+            err.println("User ID is null");
+            return Collections.emptyList();
+        }
+        try(Session session = sessionFactory.openSession()){
+            String queryString = "from Result where user.id = :userId";
+            Query<Result> query = session.createQuery(queryString, Result.class);
+            query.setParameter("userId", userId);
+            return query.list();
+        }
+        catch (Exception e){
+            e.printStackTrace(err);
+            return Collections.emptyList();
+        }
+    }
     public List<Result> findByQuiz(Quiz quiz){
         if (quiz == null) {
             err.println("Quiz is null");
@@ -59,6 +75,22 @@ public class ResultRepository {
             String queryString = "from Result where quiz = :quiz";
             Query<Result> query = session.createQuery(queryString, Result.class);
             query.setParameter("quiz", quiz);
+            return query.list();
+        }
+        catch (Exception e){
+            e.printStackTrace(err);
+            return Collections.emptyList();
+        }
+    }
+    public List<Result> findByQuiz(Long quizId){
+        if (quizId == null) {
+            err.println("Quiz ID is null");
+            return Collections.emptyList();
+        }
+        try(Session session = sessionFactory.openSession()){
+            String queryString = "from Result where quiz.id = :quizId";
+            Query<Result> query = session.createQuery(queryString, Result.class);
+            query.setParameter("quizId", quizId);
             return query.list();
         }
         catch (Exception e){
@@ -76,6 +108,23 @@ public class ResultRepository {
             Query<Result> query = session.createQuery(queryString, Result.class)
                 .setParameter("quiz", quiz)
                 .setMaxResults(10);
+            return query.list();
+        }
+        catch (Exception e){
+            e.printStackTrace(err);
+            return Collections.emptyList();
+        }
+    }
+    public List<Result> findTop10ByQuizOrderByScoreDesc(Long quizId){
+        if (quizId == null) {
+            err.println("Quiz ID is null");
+            return Collections.emptyList();
+        }
+        try(Session session = sessionFactory.openSession()){
+            String queryString = "from Result where quiz.id = :quizId order by score desc";
+            Query<Result> query = session.createQuery(queryString, Result.class)
+                    .setParameter("quizId", quizId)
+                    .setMaxResults(10);
             return query.list();
         }
         catch (Exception e){

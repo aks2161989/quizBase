@@ -27,16 +27,34 @@ public class ResultService {
         }
         return resultRepository.findByUser(user);
     }
+    public List<Result> findResultsByUser(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User ID must not be null");
+        }
+        return resultRepository.findByUser(userId);
+    }
     public List<Result> findResultsByQuiz(Quiz quiz) {
         if (quiz == null) {
             throw new IllegalArgumentException("Quiz must not be null");
         }
         return resultRepository.findByQuiz(quiz);
     }
+    public List<Result> findResultsByQuiz(Long quizId) {
+        if (quizId == null) {
+            throw new IllegalArgumentException("Quiz ID must not be null");
+        }
+        return resultRepository.findByQuiz(quizId);
+    }
     public List<Result> findTop10ResultsByQuiz(Quiz quiz) {
         if (quiz == null) {
             throw new IllegalArgumentException("Quiz must not be null");
         }
         return resultRepository.findTop10ByQuizOrderByScoreDesc(quiz);
+    }
+    public List<Result> findTop10ResultsByQuiz(Long quizId) {
+        if (quizId == null) {
+            throw new IllegalArgumentException("Quiz ID must not be null");
+        }
+        return resultRepository.findTop10ByQuizOrderByScoreDesc(quizId);
     }
 }
