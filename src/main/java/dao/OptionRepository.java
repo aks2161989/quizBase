@@ -49,4 +49,20 @@ public class OptionRepository {
             return Collections.emptyList();
         }
     }
+    public List<Option> findByQuestion(Long questionId){
+        if (questionId == null) {
+            err.println("Quiz ID is null");
+            return Collections.emptyList();
+        }
+        try(Session session = sessionFactory.openSession()){
+            String queryString = "from Option where question.id = :questionId";
+            Query<Option> query = session.createQuery(queryString, Option.class);
+            query.setParameter("questionId", questionId);
+            return query.list();
+        }
+        catch (Exception e){
+            e.printStackTrace(err);
+            return Collections.emptyList();
+        }
+    }
 }

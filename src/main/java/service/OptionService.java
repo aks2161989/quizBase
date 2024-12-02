@@ -28,4 +28,10 @@ public class OptionService {
         }
         return optionRepository.findByQuestion(question);
     }
+    public List<Option> findOptionsByQuestion(Long questionId) {
+        if (questionId == null) {
+            throw new IllegalArgumentException("Question ID must not be null");
+        }
+        return optionRepository.findByQuestion(questionId);
+    }
 }
