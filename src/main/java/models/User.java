@@ -19,18 +19,15 @@ public class User {
     @Column(nullable = false)
     private String email;
 
-    @Column
-    private String role;
 
     public User() {
     }
 
-    public User(long id, String username, String password, String email, String role) {
+    public User(long id, String username, String password, String email) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
-        this.role = role;
     }
 
     public long getId() {
@@ -65,13 +62,6 @@ public class User {
         this.email = email;
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
 
     @Override
     public String toString() {
@@ -80,7 +70,6 @@ public class User {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
-                ", role='" + role + '\'' +
                 '}';
     }
 }
