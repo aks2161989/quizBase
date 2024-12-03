@@ -19,15 +19,19 @@ public class User {
     @Column(nullable = false)
     private String email;
 
+    @Column(nullable = false)
+    private String full_name;
+
 
     public User() {
     }
 
-    public User(long id, String username, String password, String email) {
+    public User(long id, String username, String password, String email, String full_name) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
+        this.full_name = full_name;
     }
 
     public long getId() {
@@ -62,6 +66,14 @@ public class User {
         this.email = email;
     }
 
+    public String getFull_name() {
+        return full_name;
+    }
+
+    public void setFull_name(String full_name) {
+        this.full_name = full_name;
+    }
+
 
     @Override
     public String toString() {
@@ -70,6 +82,7 @@ public class User {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
+                ", full_name='" + full_name + '\'' +
                 '}';
     }
 }
