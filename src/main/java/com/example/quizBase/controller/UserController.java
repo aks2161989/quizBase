@@ -1,12 +1,11 @@
 package com.example.quizBase.controller;
 
 import com.example.quizBase.models.User;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.example.quizBase.service.UserService;
 
 import java.util.List;
@@ -68,4 +67,21 @@ public class UserController {
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.findAllUsers());
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@Valid @RequestBody User user) {
+        userService.createUser(user);
+        return ResponseEntity.ok("User registered successfully!");
+    }
+    @PostMapping("/signin")
+    public ResponseEntity<String> signIn(@RequestBody User user) {
+        User authenticatedUser = userService.authenticate(user.getUsername(), user.getPassword());
+        if (authenticatedUser != null){
+            return ResponseEntity.ok("Welcome " + authenticatedUser.getUsername());
+        }
+        else{
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        }
+    }
+
 }

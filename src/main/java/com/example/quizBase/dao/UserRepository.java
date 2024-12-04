@@ -1,6 +1,8 @@
 package com.example.quizBase.dao;
 
+import com.example.quizBase.models.Quiz;
 import com.example.quizBase.models.User;
+import jakarta.persistence.EntityNotFoundException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static java.lang.System.err;
@@ -81,6 +84,28 @@ public class UserRepository {
                 transaction.rollback();
             }
             e.printStackTrace();
+        }
+    }
+    public User findByUsernameAndPassword(String username, String password) {
+        if (username == null || password == null) {
+            throw new IllegalArgumentException("Username and password must not be null");
+        }
+
+        try {
+            Optional<User> user = findByUsername(username.toLowerCase());
+
+            if (user.get() == null) {
+                throw new IllegalArgumentException("Invalid username");
+            }
+
+            if (Objects.equals(password, user.get().getPassword())) {
+                return user.get();
+            } else {
+                throw new IllegalArgumentException("Invalid password");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error validating user credentials");
         }
     }
 

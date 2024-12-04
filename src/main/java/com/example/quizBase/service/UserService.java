@@ -58,4 +58,21 @@ public class UserService {
     public void createUser(User user){
         userRepository.save(user);
     }
+    public User authenticate(String username, String password) {
+        if (username == null) {
+            throw new IllegalArgumentException("Username cannot be null");
+        }
+        if (password == null) {
+            throw new IllegalArgumentException("Password cannot be null");
+        }
+        username = username.toLowerCase();
+
+        User user = userRepository.findByUsernameAndPassword(username, password);
+
+        if (user == null) {
+            throw new IllegalArgumentException("Invalid username or password");
+        }
+        return user;
+    }
+
 }
