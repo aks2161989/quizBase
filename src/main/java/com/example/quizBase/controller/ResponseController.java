@@ -3,10 +3,7 @@ package com.example.quizBase.controller;
 import com.example.quizBase.models.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.example.quizBase.service.ResponseService;
 
 import java.util.List;
@@ -46,5 +43,10 @@ public class ResponseController {
         }
         List<Response> responses = responseService.findResponsesByQuestion(questionId);
         return responses.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(responses);
+    }
+    @PostMapping
+    public ResponseEntity<String> answerQuiz(@RequestBody Response response) {
+        responseService.createResponse(response);
+        return ResponseEntity.ok("Response submitted successfully!");
     }
 }
