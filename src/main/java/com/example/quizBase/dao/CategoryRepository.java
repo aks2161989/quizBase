@@ -63,4 +63,21 @@ public class CategoryRepository {
             e.printStackTrace();
         }
     }
+    public void update(Category category){
+        save(category);
+    }
+    public void deleteById(Long id){
+        Transaction transaction = null;
+        try(Session session = sessionFactory.openSession()){
+            transaction = session.beginTransaction();
+            Category category = findById(id);
+            session.remove(category);
+            transaction.commit();
+        }catch (Exception e){
+            if(transaction != null){
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
 }
