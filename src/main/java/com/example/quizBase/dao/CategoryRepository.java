@@ -1,6 +1,8 @@
 package com.example.quizBase.dao;
 
 import com.example.quizBase.models.Category;
+import com.example.quizBase.models.Quiz;
+import jakarta.persistence.EntityNotFoundException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -64,8 +66,17 @@ public class CategoryRepository {
         }
     }
     public void update(Category category){
-        save(category);
+        Category existingCategory = findById(category.getId());
+        if (existingCategory == null) {
+            throw new EntityNotFoundException("Category with ID " + category.getId() + " not found");
+        }
+
+        existingCategory.setName(category.getName());
+        existingCategory.setId(category.getId());
+
+        save(existingCategory);
     }
+
     public void deleteById(Long id){
         Transaction transaction = null;
         try(Session session = sessionFactory.openSession()){

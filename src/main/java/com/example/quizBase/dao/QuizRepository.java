@@ -3,6 +3,7 @@ package com.example.quizBase.dao;
 import com.example.quizBase.models.Category;
 import com.example.quizBase.models.Quiz;
 import com.example.quizBase.models.User;
+import jakarta.persistence.EntityNotFoundException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -133,6 +134,37 @@ public class QuizRepository {
             transaction.commit();
         }catch (Exception e){
             if(transaction != null){
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+
+    public void update(Quiz quiz){
+        Quiz existingQuiz = findById(quiz.getId());
+        if (existingQuiz == null) {
+            throw new EntityNotFoundException("Quiz with ID " + quiz.getId() + " not found");
+        }
+
+        existingQuiz.setTitle(quiz.getTitle());
+        existingQuiz.setDescription(quiz.getDescription());
+        existingQuiz.setCategory(quiz.getCategory());
+        existingQuiz.setCreator(quiz.getCreator());
+        existingQuiz.setId(quiz.getId());
+        existingQuiz.setQuestions(quiz.getQuestions());
+        existingQuiz.setCreated_date(quiz.getCreated_date());
+
+         save(existingQuiz);
+    }
+    public void deleteById(Long id) {
+        Transaction transaction = null;
+        try (Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+            Quiz quiz = findById(id);
+            session.remove(quiz);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
                 transaction.rollback();
             }
             e.printStackTrace();

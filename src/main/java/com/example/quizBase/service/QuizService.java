@@ -64,4 +64,11 @@ public class QuizService {
     public void createQuiz(Quiz quiz){
         quizRepository.save(quiz);
     }
+
+    public void updateQuiz(Quiz quiz){
+        quizRepository.update(quiz);
+    }
+    public void deleteQuiz(Long id){
+        quizRepository.deleteById(id);
+    }
 }

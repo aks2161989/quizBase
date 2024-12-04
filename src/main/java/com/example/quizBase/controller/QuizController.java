@@ -1,13 +1,13 @@
 package com.example.quizBase.controller;
 
+import com.example.quizBase.models.Category;
 import com.example.quizBase.models.Quiz;
 import com.example.quizBase.service.QuizService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -53,6 +53,23 @@ public class QuizController {
     public ResponseEntity<List<Quiz>> getAllQuizzes() {
         List<Quiz> quizzes = quizService.findAllQuizzes();
         return quizzes.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(quizzes);
+    }
+    @PostMapping
+    public ResponseEntity<String> createQuiz(@Valid @RequestBody Quiz quiz) {
+        quizService.createQuiz(quiz);
+        return ResponseEntity.ok("Quiz added successfully");
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateQuiz(@PathVariable @Min(1)  Long id, @Valid @RequestBody Quiz updatedQuiz) {
+        updatedQuiz.setId(id);
+        quizService.updateQuiz(updatedQuiz);
+        return ResponseEntity.ok("Quiz updated successfully");
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteQuiz(@PathVariable @Min(1) Long id) {
+        quizService.deleteQuiz(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
