@@ -2,6 +2,9 @@ package com.example.quizBase.models;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -22,6 +25,8 @@ public class User {
     @Column(nullable = false)
     private String full_name;
 
+@OneToMany (mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Quiz> quizzesCreated = new ArrayList<>();
 
     public User() {
     }
@@ -32,6 +37,14 @@ public class User {
         this.password = password;
         this.email = email;
         this.full_name = full_name;
+    }
+
+    public List<Quiz> getQuizzesCreated() {
+        return quizzesCreated;
+    }
+
+    public void setQuizzesCreated(List<Quiz> quizzesCreated) {
+        this.quizzesCreated = quizzesCreated;
     }
 
     public long getId() {

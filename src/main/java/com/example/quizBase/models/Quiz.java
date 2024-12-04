@@ -33,6 +33,7 @@ public class Quiz {
     @Column(nullable = false)
     private LocalDateTime created_date;
 
+
     public Quiz(){}
 
     public Quiz(long id, String title, String description, Category category, User creator, LocalDateTime created_date) {
