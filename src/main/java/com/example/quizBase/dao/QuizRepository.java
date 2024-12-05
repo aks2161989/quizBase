@@ -26,7 +26,7 @@ public class QuizRepository {
         this.sessionFactory = sessionFactory;
     }
 
-    public Quiz findById(long id){
+    public Quiz findById(Long id){
         try(Session session = sessionFactory.openSession()){
             return session.get(Quiz.class, id);
         }
@@ -150,7 +150,6 @@ public class QuizRepository {
         existingQuiz.setDescription(quiz.getDescription());
         existingQuiz.setCategory(quiz.getCategory());
         existingQuiz.setCreator(quiz.getCreator());
-        existingQuiz.setId(quiz.getId());
         existingQuiz.setQuestions(quiz.getQuestions());
         existingQuiz.setCreated_date(quiz.getCreated_date());
 

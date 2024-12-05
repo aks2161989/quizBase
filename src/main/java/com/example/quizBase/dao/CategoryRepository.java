@@ -2,7 +2,9 @@ package com.example.quizBase.dao;
 
 import com.example.quizBase.models.Category;
 import com.example.quizBase.models.Quiz;
+import com.example.quizBase.util.HibernateUtil;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -24,7 +26,7 @@ public class CategoryRepository {
         this.sessionFactory = sessionFactory;
     }
 
-    public Category findById(long id){
+    public Category findById(Long id){
         try(Session session = sessionFactory.openSession()){
             return session.get(Category.class, id);
         }
@@ -52,26 +54,26 @@ public class CategoryRepository {
             return Collections.emptyList();
         }
     }
+
+    @Transactional
     public void save(Category category) {
         Transaction transaction = null;
-        Session session = null;
+        Session session = HibernateUtil.sessionFactory().getCurrentSession();
         try {
-            session = sessionFactory.openSession();
             transaction = session.beginTransaction();
-            System.out.println("Saving category: " + category);
-            session.saveOrUpdate(category);
+            System.out.println("Before saving to DB: " + category);
+            session.persist(category);
+            System.out.println("After saving to DB: " + category);
             transaction.commit();
         } catch (Exception e) {
-            if (transaction != null && transaction.getStatus() != null && transaction.getStatus().canRollback()) {
+            if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
             e.printStackTrace();
-        } finally {
-            if (session != null && session.isOpen()) {
-                session.close();
-            }
         }
     }
+
+
     public void update(Category category){
         Category existingCategory = findById(category.getId());
         if (existingCategory == null) {
@@ -79,8 +81,6 @@ public class CategoryRepository {
         }
 
         existingCategory.setName(category.getName());
-        existingCategory.setId(category.getId());
-
         save(existingCategory);
     }
 

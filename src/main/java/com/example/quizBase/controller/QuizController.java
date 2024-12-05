@@ -80,7 +80,6 @@ public class QuizController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only edit your own quizzes");
         }
 
-        updatedQuiz.setId(id);
         updatedQuiz.setCreator(existingQuiz.getCreator());
         quizService.updateQuiz(updatedQuiz);
         return ResponseEntity.ok("Quiz updated successfully");

@@ -24,7 +24,7 @@ public class QuestionRepository {
         this.sessionFactory = sessionFactory;
     }
 
-    public Question findById(long id){
+    public Question findById(Long id){
         try(Session session = sessionFactory.openSession()){
             return session.get(Question.class, id);
         }

@@ -43,14 +43,17 @@ public class CategoryController {
     }
     @PostMapping
     public ResponseEntity<String> createCategory(@Valid @RequestBody Category category) {
-        System.out.println("CategoryController: createCategory called with: " + category);
+        System.out.println("CategoryController: Received category: " + category);
         categoryService.createCategory(category);
+        System.out.println("CategoryController: Persisted category: " + category);
         return ResponseEntity.ok("Category added successfully");
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateCategory(@PathVariable @Min(1)  Long id, @Valid @RequestBody Category updatedCategory) {
-        updatedCategory.setId(id);
+        if (!id.equals(updatedCategory.getId())) {
+            throw new IllegalArgumentException("Mismatch between path variable ID and request body ID");
+        }
         categoryService.updateCategory(updatedCategory);
         return ResponseEntity.ok("Category updated successfully");
     }

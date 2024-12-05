@@ -24,7 +24,7 @@ public class ResponseRepository {
         this.sessionFactory = sessionFactory;
     }
 
-    public Response findById(long id){
+    public Response findById(Long id){
         try(Session session = sessionFactory.openSession()){
             return session.get(Response.class, id);
         }

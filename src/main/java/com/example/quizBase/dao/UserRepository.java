@@ -26,7 +26,7 @@ public class UserRepository {
         this.sessionFactory = sessionFactory;
     }
 
-    public User findById(long id){
+    public User findById(Long id){
         try(Session session = sessionFactory.openSession()){
             return session.get(User.class, id);
         }

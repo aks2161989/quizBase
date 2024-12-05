@@ -2,6 +2,7 @@ package com.example.quizBase.service;
 
 import com.example.quizBase.dao.CategoryRepository;
 import com.example.quizBase.models.Category;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,7 @@ public class CategoryService {
         List<Category> categories = categoryRepository.findAllCategories();
         return categories != null ? categories : Collections.emptyList();
     }
+    @Transactional
     public void createCategory(Category category){
 
         System.out.println("CategoryService: createCategory called with: " + category);

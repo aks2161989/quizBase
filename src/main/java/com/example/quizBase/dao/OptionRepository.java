@@ -24,7 +24,7 @@ public class OptionRepository {
         this.sessionFactory = sessionFactory;
     }
 
-    public Option findById(long id){
+    public Option findById(Long id){
         try(Session session = sessionFactory.openSession()){
             return session.get(Option.class, id);
         }
