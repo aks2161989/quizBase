@@ -10,5 +10,13 @@
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.hbm2ddl.auto">validate</property>
+
+        <mapping class="com.example.quizBase.models.Category"></mapping>
+        <mapping class="com.example.quizBase.models.User"></mapping>
+        <mapping class="com.example.quizBase.models.Option"></mapping>
+        <mapping class="com.example.quizBase.models.Question"></mapping>
+        <mapping class="com.example.quizBase.models.Response"></mapping>
+        <mapping class="com.example.quizBase.models.Result"></mapping>
+        <mapping class="com.example.quizBase.models.Quiz"></mapping>
     </session-factory>
 </hibernate-configuration>
