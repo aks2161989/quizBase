@@ -59,7 +59,7 @@ public class HibernateUtil {
         return metaData.getSessionFactoryBuilder().build();
     }
 
-   /* public static void shutdown(){
+    public static void shutdown(){
         sessionFactory().close();
-    }*/
+    }
 }
