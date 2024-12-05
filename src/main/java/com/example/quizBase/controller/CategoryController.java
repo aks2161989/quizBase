@@ -43,6 +43,7 @@ public class CategoryController {
     }
     @PostMapping
     public ResponseEntity<String> createCategory(@Valid @RequestBody Category category) {
+        System.out.println("CategoryController: createCategory called with: " + category);
         categoryService.createCategory(category);
         return ResponseEntity.ok("Category added successfully");
     }

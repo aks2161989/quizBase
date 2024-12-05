@@ -52,17 +52,24 @@ public class CategoryRepository {
             return Collections.emptyList();
         }
     }
-    public void save(Category category){
+    public void save(Category category) {
         Transaction transaction = null;
-        try(Session session = sessionFactory.openSession()){
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
             transaction = session.beginTransaction();
+            System.out.println("Saving category: " + category);
             session.saveOrUpdate(category);
             transaction.commit();
-        }catch (Exception e){
-            if(transaction != null){
+        } catch (Exception e) {
+            if (transaction != null && transaction.getStatus() != null && transaction.getStatus().canRollback()) {
                 transaction.rollback();
             }
             e.printStackTrace();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
     }
     public void update(Category category){

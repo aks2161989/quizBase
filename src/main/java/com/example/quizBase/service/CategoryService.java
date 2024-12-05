@@ -34,6 +34,8 @@ public class CategoryService {
         return categories != null ? categories : Collections.emptyList();
     }
     public void createCategory(Category category){
+
+        System.out.println("CategoryService: createCategory called with: " + category);
         categoryRepository.save(category);
     }
     public void updateCategory(Category category){
