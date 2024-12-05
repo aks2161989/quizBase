@@ -4,6 +4,7 @@ import com.example.quizBase.dao.QuizRepository;
 import com.example.quizBase.models.Category;
 import com.example.quizBase.models.Quiz;
 import com.example.quizBase.models.User;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,6 +62,8 @@ public class QuizService {
         List<Quiz> quizzes = quizRepository.findAllQuizzes();
         return quizzes != null ? quizzes : Collections.emptyList();
     }
+
+    @Transactional
     public void createQuiz(Quiz quiz){
         quizRepository.save(quiz);
     }

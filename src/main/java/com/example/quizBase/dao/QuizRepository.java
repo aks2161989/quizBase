@@ -3,7 +3,9 @@ package com.example.quizBase.dao;
 import com.example.quizBase.models.Category;
 import com.example.quizBase.models.Quiz;
 import com.example.quizBase.models.User;
+import com.example.quizBase.util.HibernateUtil;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -126,14 +128,15 @@ public class QuizRepository {
             return Collections.emptyList();
         }
     }
+    @Transactional
     public void save(Quiz quiz){
         Transaction transaction = null;
-        try(Session session = sessionFactory.openSession()){
+        try(Session session = HibernateUtil.sessionFactory().getCurrentSession()){
             transaction = session.beginTransaction();
-            session.saveOrUpdate(quiz);
+            session.persist(quiz);
             transaction.commit();
         }catch (Exception e){
-            if(transaction != null){
+            if(transaction != null && transaction.isActive()){
                 transaction.rollback();
             }
             e.printStackTrace();

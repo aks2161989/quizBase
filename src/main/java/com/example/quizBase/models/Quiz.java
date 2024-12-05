@@ -30,19 +30,17 @@ public class Quiz {
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions;
 
-    @Column(nullable = false)
+    @Column(name = "created_date", nullable = false, updatable = false, insertable = false)
     private LocalDateTime created_date;
 
 
     public Quiz(){}
 
     public Quiz(long id, String title, String description, Category category, User creator, LocalDateTime created_date) {
-        this.id = id;
         this.title = title;
         this.description = description;
         this.category = category;
         this.creator = creator;
-        this.created_date = created_date;
     }
 
     public long getId() {

@@ -62,8 +62,9 @@ public class QuizController {
         return quizzes.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(quizzes);
     }
     @PostMapping
-    public ResponseEntity<String> createQuiz(@Valid @RequestBody Quiz quiz, Principal principal) {
-        User creator = userService.findUserByUsername(principal.getName()).get();
+    public ResponseEntity<String> createQuiz(@Valid @RequestBody Quiz quiz) {
+        User creator = userService.findUserByUsername(quiz.getCreator().getUsername()).
+                orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         quiz.setCreator(creator);
 

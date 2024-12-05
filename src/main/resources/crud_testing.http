@@ -1,6 +1,13 @@
-POST http://localhost:8080/categories
+POST http://localhost:8080/quizzes
 Content-Type: application/json
 
 {
-  "name": "Food & Drink"
+  "title": "Sample Quiz",
+  "description": "This is a sample quiz",
+  "category": {
+    "id": 1
+  },
+  "creator": {
+    "username": "john_doe"
+  }
 }

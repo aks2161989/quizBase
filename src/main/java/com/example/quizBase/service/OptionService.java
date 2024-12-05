@@ -3,6 +3,7 @@ package com.example.quizBase.service;
 import com.example.quizBase.dao.OptionRepository;
 import com.example.quizBase.models.Option;
 import com.example.quizBase.models.Question;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +35,8 @@ public class OptionService {
         }
         return optionRepository.findByQuestion(questionId);
     }
+
+    @Transactional
     public void createOption(Option option){
         optionRepository.save(option);
     }
