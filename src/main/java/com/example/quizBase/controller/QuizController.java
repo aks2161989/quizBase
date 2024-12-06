@@ -1,8 +1,6 @@
 package com.example.quizBase.controller;
 
-import com.example.quizBase.models.Category;
-import com.example.quizBase.models.Quiz;
-import com.example.quizBase.models.User;
+import com.example.quizBase.models.*;
 import com.example.quizBase.service.QuizService;
 import com.example.quizBase.service.UserService;
 import jakarta.validation.Valid;
@@ -67,7 +65,16 @@ public class QuizController {
                 orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         quiz.setCreator(creator);
-
+        if (quiz.getQuestions() != null) {
+            for (Question question : quiz.getQuestions()) {
+                question.setQuiz(quiz);
+                if (question.getOptions() != null) {
+                    for (Option option : question.getOptions()) {
+                        option.setQuestion(question);
+                    }
+                }
+            }
+        }
         quizService.createQuiz(quiz);
         return ResponseEntity.ok("Quiz added successfully");
     }

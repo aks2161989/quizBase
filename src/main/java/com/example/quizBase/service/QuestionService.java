@@ -3,6 +3,7 @@ package com.example.quizBase.service;
 import com.example.quizBase.dao.QuestionRepository;
 import com.example.quizBase.models.Question;
 import com.example.quizBase.models.Quiz;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +40,8 @@ public class QuestionService {
         List<Question> questions = questionRepository.findAllQuestions();
         return questions != null ? questions : Collections.emptyList();
     }
+
+    @Transactional
     public void createQuestion(Question question){
         questionRepository.save(question);
     }

@@ -31,16 +31,22 @@ public class HibernateUtil {
         Map<String, Object> settings = new HashMap<>();
 
         settings.put("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-        settings.put("hibernate.connection.url", "jdbc:mysql://localhost:3306/quizbase");
+        settings.put("hibernate.connection.url", "jdbc:mysql://localhost:3306/quizbase?createDatabaseIfNotExist=true");
         settings.put("hibernate.connection.username", "root");
         settings.put("hibernate.connection.password", "12345678");
 
         settings.put("hibernate.hbm2ddl.auto", "update");
+        settings.put("spring.jpa.hibernate.ddl-auto", "none");
         settings.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         settings.put("hibernate.dialect.storage_engine", "innodb");
-        settings.put("hibernate.show-sql", "true");
+       // settings.put("hibernate.show-sql", "true");;
+        //settings.put("spring.datasource.initialization-mode", "always");
+        settings.put("spring.sql.init.mode", "always");
+        settings.put("spring.sql.init.schema-locations", "classpath:import.sql");
+        settings.put("spring.sql.init.data-locations", "classpath:import.sql");
         settings.put("hibernate.current_session_context_class", "thread");
-        settings.put("hibernate.classloading.use_current_tccl_as_parent", "false");
+
+        //settings.put("hibernate.connection.autocommit", "true");
 
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(settings)

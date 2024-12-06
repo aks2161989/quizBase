@@ -2,6 +2,7 @@ package com.example.quizBase.models;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,7 +21,7 @@ public class Question {
     private String text;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Option> options;
+    private List<Option> options = new ArrayList<>();
 
     public Question() {
     }

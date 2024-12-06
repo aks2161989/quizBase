@@ -3,6 +3,7 @@ package com.example.quizBase.models;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -28,7 +29,8 @@ public class Quiz {
     private User creator;
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Question> questions;
+    private List<Question> questions = new ArrayList<>();
+
 
     @Column(name = "created_date", nullable = false, updatable = false, insertable = false)
     private LocalDateTime created_date;

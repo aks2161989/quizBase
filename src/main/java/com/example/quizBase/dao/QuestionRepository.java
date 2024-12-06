@@ -2,6 +2,7 @@ package com.example.quizBase.dao;
 
 import com.example.quizBase.models.Question;
 import com.example.quizBase.models.Quiz;
+import jakarta.transaction.Transactional;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -74,14 +75,16 @@ public class QuestionRepository {
             return Collections.emptyList();
         }
     }
+
+    @Transactional
     public void save(Question question){
         Transaction transaction = null;
-        try(Session session = sessionFactory.openSession()){
+        try(Session session = sessionFactory.getCurrentSession()){
             transaction = session.beginTransaction();
-            session.saveOrUpdate(question);
+            session.persist(question);
             transaction.commit();
         }catch (Exception e){
-            if(transaction != null){
+            if(transaction != null && transaction.isActive()){
                 transaction.rollback();
             }
             e.printStackTrace();
