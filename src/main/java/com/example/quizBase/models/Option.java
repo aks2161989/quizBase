@@ -46,6 +46,10 @@ public class Option {
         this.question = question;
     }
 
+    @ManyToOne
+    @JoinColumn(name="quiz_id", nullable = false)
+    private Quiz quiz;
+
     public String getText() {
         return text;
     }
@@ -66,6 +70,14 @@ public class Option {
         this.id = id;
     }
 
+    public Quiz getQuiz() {
+        return quiz;
+    }
+
+    public void setQuiz(Quiz quiz) {
+        this.quiz = quiz;
+    }
+
     @Override
     public String toString() {
         return "Option{" +
@@ -73,6 +85,7 @@ public class Option {
                 ", question=" + question +
                 ", text='" + text + '\'' +
                 ", is_correct=" + is_correct +
+                ", quiz=" + quiz +
                 '}';
     }
 }

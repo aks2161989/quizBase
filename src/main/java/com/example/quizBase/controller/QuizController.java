@@ -71,6 +71,7 @@ public class QuizController {
                 if (question.getOptions() != null) {
                     for (Option option : question.getOptions()) {
                         option.setQuestion(question);
+                        option.setQuiz(quiz);
                     }
                 }
             }

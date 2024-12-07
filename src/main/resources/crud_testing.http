@@ -1,6 +1,57 @@
-POST http://localhost:8080/categories
+POST http://localhost:8080/quizzes
 Content-Type: application/json
 
 {
-  "name": "Food & Drink"
+  "title": "Space Exploration Quiz",
+  "description": "A quiz to test your knowledge of space exploration history.",
+  "category": {
+    "id": 3
+  },
+  "creator": {
+    "username": "jane_smith"
+  },
+  "questions": [
+    {
+      "text": "Who was the first person to walk on the moon?",
+      "options": [
+        {
+          "text": "Neil Armstrong",
+          "is_correct": true
+        },
+        {
+          "text": "Buzz Aldrin",
+          "is_correct": false
+        },
+        {
+          "text": "Yuri Gagarin",
+          "is_correct": false
+        },
+        {
+          "text": "John Glenn",
+          "is_correct": false
+        }
+      ]
+    },
+    {
+      "text": "Which spacecraft was the first to orbit Jupiter?",
+      "options": [
+        {
+          "text": "Galileo",
+          "is_correct": true
+        },
+        {
+          "text": "Voyager 1",
+          "is_correct": false
+        },
+        {
+          "text": "Cassini",
+          "is_correct": false
+        },
+        {
+          "text": "Pioneer 10",
+          "is_correct": false
+        }
+      ]
+    }
+  ]
 }
