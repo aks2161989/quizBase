@@ -68,11 +68,7 @@ public class UserController {
         return ResponseEntity.ok(userService.findAllUsers());
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@Valid @RequestBody User user) {
-        userService.createUser(user);
-        return ResponseEntity.ok("User registered successfully!");
-    }
+
     @PostMapping("/signin")
     public ResponseEntity<String> signIn(@RequestBody User user) {
         User authenticatedUser = userService.authenticate(user.getUsername(), user.getPassword());
@@ -81,6 +77,16 @@ public class UserController {
         }
         else{
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@RequestBody User user) {
+        try{
+                userService.registerUser(user);
+                return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully.");
+            }catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 

@@ -75,4 +75,19 @@ public class UserService {
         return user;
     }
 
-}
+    public void registerUser(User user) {
+        if(userRepository.findByUsername(user.getUsername()).isPresent()){
+            throw new IllegalArgumentException("This username already exists. Please choose another");
+        }
+        if(userRepository.findByEmail(user.getEmail()).isPresent()){
+            throw new IllegalArgumentException("This Email is already in use");
+        }
+        if(user.getFull_name() == null){
+            throw new IllegalArgumentException("Full name cannot be blank");
+        }
+        this.createUser(user);
+
+    }
+
+
+    }
