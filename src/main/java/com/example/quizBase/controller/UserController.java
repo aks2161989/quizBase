@@ -1,6 +1,7 @@
 package com.example.quizBase.controller;
 
 import com.example.quizBase.models.User;
+import dto.LoginRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -70,8 +71,8 @@ public class UserController {
 
 
     @PostMapping("/signin")
-    public ResponseEntity<String> signIn(@RequestBody User user) {
-        User authenticatedUser = userService.authenticate(user.getUsername(), user.getPassword());
+    public ResponseEntity<String> signIn(@RequestBody LoginRequest loginRequest) {
+        User authenticatedUser = userService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
         if (authenticatedUser != null){
             return ResponseEntity.ok("Welcome " + authenticatedUser.getUsername());
         }
