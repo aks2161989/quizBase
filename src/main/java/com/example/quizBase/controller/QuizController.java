@@ -107,4 +107,14 @@ public class QuizController {
         return ResponseEntity.ok("Quiz deleted successfully.");
     }
 
-}
+    @PostMapping("/{quizId}/answers")
+    public ResponseEntity<String> submitAnswers(@PathVariable Long quizId, @RequestBody List<Response> responses, Principal principal) {
+        User user = userService.findUserByUsername(principal.getName()).
+                orElseThrow(() -> new IllegalArgumentException("User not found"));
+        quizService.submitAnswers(quizId, user, responses);
+
+        return ResponseEntity.ok("Answers submitted successfully");
+    }
+
+
+    }

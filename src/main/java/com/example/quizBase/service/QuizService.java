@@ -1,25 +1,37 @@
 package com.example.quizBase.service;
 
 import com.example.quizBase.dao.QuizRepository;
-import com.example.quizBase.models.Category;
-import com.example.quizBase.models.Quiz;
-import com.example.quizBase.models.User;
+import com.example.quizBase.dao.ResponseRepository;
+import com.example.quizBase.dao.ResultRepository;
+import com.example.quizBase.models.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.example.quizBase.dao.OptionRepository;
 
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class QuizService {
     private final QuizRepository quizRepository;
+    private final OptionRepository optionRepository;
+    private final ResponseRepository responseRepository;
+    private final ResultRepository resultRepository;
 
     @Autowired
-    public QuizService(QuizRepository quizRepository) {
+    public QuizService(QuizRepository quizRepository, OptionRepository optionRepository, ResponseRepository responseRepository, ResultRepository resultRepository) {
         this.quizRepository = quizRepository;
+        this.optionRepository = optionRepository;
+        this.responseRepository = responseRepository;
+        this.resultRepository = resultRepository;
     }
+
 
     public Optional<Quiz> findQuizById(Long id) {
         return Optional.ofNullable(quizRepository.findById(id));
@@ -74,4 +86,43 @@ public class QuizService {
     public void deleteQuiz(Long id){
         quizRepository.deleteById(id);
     }
-}
+
+    public void submitAnswers(Long quizId, User user, List<Response> responses) {
+        Quiz quiz = null;
+        Option selectedOption = null;
+        try {
+            quiz = quizRepository.findById(quizId);
+        }catch(Exception e) {
+            if (quiz == null) {
+                throw new IllegalArgumentException("Quiz not found");
+            }
+        }
+
+        Result result = new Result();
+        result.setUser(user);
+        result.setQuiz(quiz);
+        result.setAttempted_date(Date.from(LocalDateTime.now().toLocalDate().
+                atStartOfDay(ZoneId.systemDefault()).toInstant()));
+         result.setScore(0);
+         int score = 0;
+
+         for(Response r: responses){
+             try {
+                 selectedOption = optionRepository.findById(r.getSelectedOption().getId());
+             }
+             catch (Exception e){
+                 throw new IllegalArgumentException("Option not found");
+             }
+             if(selectedOption.getIs_correct()){
+                score++;
+             }
+             r.setResult(result);
+             responseRepository.save(r);
+         }
+         result.setScore(score);
+         resultRepository.save(result);
+
+    }
+
+    }
+

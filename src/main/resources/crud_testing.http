@@ -1,57 +1,20 @@
-POST http://localhost:8080/quizzes
+POST http://localhost:8080/quizzes/1/submit
 Content-Type: application/json
 
 {
-  "title": "Space Exploration Quiz",
-  "description": "A quiz to test your knowledge of space exploration history.",
-  "category": {
-    "id": 3
-  },
-  "creator": {
-    "username": "jane_smith"
-  },
-  "questions": [
+  "userId": 1,
+  "answers": [
     {
-      "text": "Who was the first person to walk on the moon?",
-      "options": [
-        {
-          "text": "Neil Armstrong",
-          "is_correct": true
-        },
-        {
-          "text": "Buzz Aldrin",
-          "is_correct": false
-        },
-        {
-          "text": "Yuri Gagarin",
-          "is_correct": false
-        },
-        {
-          "text": "John Glenn",
-          "is_correct": false
-        }
-      ]
+      "questionId": 1,
+      "selectedOptionId": 3
     },
     {
-      "text": "Which spacecraft was the first to orbit Jupiter?",
-      "options": [
-        {
-          "text": "Galileo",
-          "is_correct": true
-        },
-        {
-          "text": "Voyager 1",
-          "is_correct": false
-        },
-        {
-          "text": "Cassini",
-          "is_correct": false
-        },
-        {
-          "text": "Pioneer 10",
-          "is_correct": false
-        }
-      ]
+      "questionId": 2,
+      "selectedOptionId": 7
+    },
+    {
+      "questionId": 3,
+      "selectedOptionId": 10
     }
   ]
 }
