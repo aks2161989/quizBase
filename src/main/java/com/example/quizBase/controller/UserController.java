@@ -1,6 +1,7 @@
 package com.example.quizBase.controller;
 
 import com.example.quizBase.models.User;
+import com.example.quizBase.util.JwtService;
 import dto.LoginRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,17 +9,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.quizBase.service.UserService;
+import io.jsonwebtoken.Jwts;
 
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final JwtService jwtService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JwtService jwtService) {
         this.userService = userService;
+        this.jwtService = jwtService;
     }
 
     @GetMapping("/{id}")
@@ -71,13 +78,18 @@ public class UserController {
 
 
     @PostMapping("/signin")
-    public ResponseEntity<String> signIn(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<Map<String, String>> signIn(@RequestBody LoginRequest loginRequest) {
         User authenticatedUser = userService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
         if (authenticatedUser != null){
-            return ResponseEntity.ok("Welcome " + authenticatedUser.getUsername());
+            String token = jwtService.generateToken(authenticatedUser.getUsername());
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Welcome " + authenticatedUser.getUsername());
+            response.put("token", token);
+
+            return ResponseEntity.ok(response);
         }
         else{
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials"));
         }
     }
 

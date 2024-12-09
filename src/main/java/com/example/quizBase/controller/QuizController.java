@@ -3,6 +3,7 @@ package com.example.quizBase.controller;
 import com.example.quizBase.models.*;
 import com.example.quizBase.service.QuizService;
 import com.example.quizBase.service.UserService;
+import com.example.quizBase.util.JwtService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +20,14 @@ import java.util.List;
 public class QuizController {
     private final QuizService quizService;
     private final UserService userService;
+    private final JwtService jwtService;
 
     @Autowired
-    public QuizController(QuizService quizService, UserService userService)
+    public QuizController(QuizService quizService, UserService userService, JwtService jwtService)
     {
         this.quizService = quizService;
         this.userService = userService;
+        this.jwtService = jwtService;
     }
 
     @GetMapping("/{id}")
@@ -108,9 +111,21 @@ public class QuizController {
     }
 
     @PostMapping("/{quizId}/answers")
-    public ResponseEntity<String> submitAnswers(@PathVariable Long quizId, @RequestBody List<Response> responses, Principal principal) {
-        User user = userService.findUserByUsername(principal.getName()).
-                orElseThrow(() -> new IllegalArgumentException("User not found"));
+    public ResponseEntity<String> submitAnswers(@PathVariable Long quizId,
+                                                @RequestBody List<Response> responses,
+                                                @RequestHeader("Authorization")String token) {
+        String username;
+        try {
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+            username = jwtService.validateToken(token);
+        } catch(Exception e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid or expired token");
+        }
+
+        User user = userService.findUserByUsername(username)
+                        .orElseThrow(() -> new IllegalArgumentException("user not found"));
         quizService.submitAnswers(quizId, user, responses);
 
         return ResponseEntity.ok("Answers submitted successfully");

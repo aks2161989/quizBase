@@ -31,7 +31,6 @@ public class Result {
     }
 
     public Result(long id, User user, Quiz quiz, int score, Date attempted_date) {
-        this.id = id;
         this.user = user;
         this.quiz = quiz;
         this.score = score;

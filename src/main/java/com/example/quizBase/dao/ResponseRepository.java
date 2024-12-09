@@ -3,6 +3,7 @@ package com.example.quizBase.dao;
 import com.example.quizBase.models.Question;
 import com.example.quizBase.models.Response;
 import com.example.quizBase.models.Result;
+import jakarta.transaction.Transactional;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -98,14 +99,15 @@ public class ResponseRepository {
             return Collections.emptyList();
         }
     }
+    @Transactional
     public void save(Response response){
         Transaction transaction = null;
-        try(Session session = sessionFactory.openSession()){
+        try(Session session = sessionFactory.getCurrentSession()){
             transaction = session.beginTransaction();
-            session.saveOrUpdate(response);
+            session.persist(response);
             transaction.commit();
         }catch (Exception e){
-            if(transaction != null){
+            if(transaction != null  && transaction.isActive()){
                 transaction.rollback();
             }
             e.printStackTrace();

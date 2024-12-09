@@ -3,6 +3,7 @@ package com.example.quizBase.dao;
 import com.example.quizBase.models.Quiz;
 import com.example.quizBase.models.Result;
 import com.example.quizBase.models.User;
+import jakarta.transaction.Transactional;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -132,14 +133,15 @@ public class ResultRepository {
             return Collections.emptyList();
         }
     }
+    @Transactional
     public void save(Result result){
         Transaction transaction = null;
-        try(Session session = sessionFactory.openSession()){
+        try(Session session = sessionFactory.getCurrentSession()){
             transaction = session.beginTransaction();
-            session.saveOrUpdate(result);
+            session.persist(result);
             transaction.commit();
         }catch (Exception e){
-            if(transaction != null){
+            if(transaction != null  && transaction.isActive()){
                 transaction.rollback();
             }
             e.printStackTrace();

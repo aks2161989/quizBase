@@ -87,6 +87,7 @@ public class QuizService {
         quizRepository.deleteById(id);
     }
 
+    @Transactional
     public void submitAnswers(Long quizId, User user, List<Response> responses) {
         Quiz quiz = null;
         Option selectedOption = null;
