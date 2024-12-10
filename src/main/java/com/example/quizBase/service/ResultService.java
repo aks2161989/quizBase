@@ -4,6 +4,7 @@ import com.example.quizBase.dao.ResultRepository;
 import com.example.quizBase.models.Quiz;
 import com.example.quizBase.models.Result;
 import com.example.quizBase.models.User;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,6 +60,8 @@ public class ResultService {
         }
         return resultRepository.findTop10ByQuizOrderByScoreDesc(quizId);
     }
+
+    @Transactional
     public void createResult(Result result){
         resultRepository.save(result);
     }

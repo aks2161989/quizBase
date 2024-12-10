@@ -1,6 +1,6 @@
 POST http://localhost:8080/quizzes/1/answers
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsImlhdCI6MTczMzY5MTk1OSwiZXhwIjoxNzMzNzI3OTU5fQ.-50zsWVFOxVgBwIq1ijC0e_hSD6kQdFCkqzHhb_9ZCY
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsImlhdCI6MTczMzgxNjQyNCwiZXhwIjoxNzMzODUyNDI0fQ.itbC-jhL3DsOPIcXDi9kUsf-lLGaqmmcem0ePtjRJUc
 
 [
   {

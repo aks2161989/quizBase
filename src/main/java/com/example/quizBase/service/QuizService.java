@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
 public class QuizService {
     private final QuizRepository quizRepository;
@@ -105,6 +106,7 @@ public class QuizService {
         result.setAttempted_date(Date.from(LocalDateTime.now().toLocalDate().
                 atStartOfDay(ZoneId.systemDefault()).toInstant()));
          result.setScore(0);
+        resultRepository.save(result);
          int score = 0;
 
          for(Response r: responses){
@@ -114,6 +116,15 @@ public class QuizService {
              catch (Exception e){
                  throw new IllegalArgumentException("Option not found");
              }
+
+             Question question = selectedOption.getQuestion();
+             if (question == null) {
+                 throw new IllegalArgumentException("Question not found for the selected option");
+             }
+
+             r.setQuestion(question);
+             r.setResult(result);
+
              if(selectedOption.getIs_correct()){
                 score++;
              }
@@ -121,8 +132,6 @@ public class QuizService {
              responseRepository.save(r);
          }
          result.setScore(score);
-         resultRepository.save(result);
-
     }
 
     }

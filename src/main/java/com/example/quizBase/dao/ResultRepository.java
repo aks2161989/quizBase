@@ -135,15 +135,10 @@ public class ResultRepository {
     }
     @Transactional
     public void save(Result result){
-        Transaction transaction = null;
         try(Session session = sessionFactory.getCurrentSession()){
-            transaction = session.beginTransaction();
+            Transaction transaction = session.beginTransaction();
             session.persist(result);
-            transaction.commit();
         }catch (Exception e){
-            if(transaction != null  && transaction.isActive()){
-                transaction.rollback();
-            }
             e.printStackTrace();
         }
     }

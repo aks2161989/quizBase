@@ -101,15 +101,10 @@ public class ResponseRepository {
     }
     @Transactional
     public void save(Response response){
-        Transaction transaction = null;
         try(Session session = sessionFactory.getCurrentSession()){
-            transaction = session.beginTransaction();
+            Transaction transaction = session.beginTransaction();
             session.persist(response);
-            transaction.commit();
         }catch (Exception e){
-            if(transaction != null  && transaction.isActive()){
-                transaction.rollback();
-            }
             e.printStackTrace();
         }
     }

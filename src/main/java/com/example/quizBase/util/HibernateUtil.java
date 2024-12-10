@@ -8,10 +8,15 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.service.ServiceRegistry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@EnableTransactionManagement
 @Configuration
 public class HibernateUtil {
 
@@ -25,7 +30,7 @@ public class HibernateUtil {
         }
     }*/
 
-    @Bean
+    @Bean(name="entityManagerFactory")
     public static SessionFactory sessionFactory(){
 
         Map<String, Object> settings = new HashMap<>();
@@ -45,6 +50,8 @@ public class HibernateUtil {
         settings.put("spring.sql.init.schema-locations", "classpath:import.sql");
         settings.put("spring.sql.init.data-locations", "classpath:import.sql");
         settings.put("hibernate.current_session_context_class", "thread");
+        settings.put("current_session_context_class", "thread");
+
 
         //settings.put("hibernate.connection.autocommit", "true");
 
@@ -65,6 +72,21 @@ public class HibernateUtil {
         return metaData.getSessionFactoryBuilder().build();
     }
 
+    @Bean(name = "datasource")
+    public DriverManagerDataSource dataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+
+        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/quizbase");
+        dataSource.setUsername("root");
+        dataSource.setPassword("12345678");
+
+        return dataSource;
+    }
+    @Bean
+    public PlatformTransactionManager txManager(){
+        return new DataSourceTransactionManager(dataSource());
+    }
     public static void shutdown(){
         sessionFactory().close();
     }

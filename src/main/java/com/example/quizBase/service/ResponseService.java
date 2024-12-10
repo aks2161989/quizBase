@@ -4,6 +4,7 @@ import com.example.quizBase.dao.ResponseRepository;
 import com.example.quizBase.models.Question;
 import com.example.quizBase.models.Response;
 import com.example.quizBase.models.Result;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +49,8 @@ public class ResponseService {
         }
         return responseRepository.findByQuestion(questionId);
     }
+
+    @Transactional
     public void createResponse(Response response){
         responseRepository.save(response);
     }
