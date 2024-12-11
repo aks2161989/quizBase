@@ -89,6 +89,7 @@ public class QuizService {
                 throw  new IllegalArgumentException("Quiz with id " + quiz.getId() + " not found");
         }
         existingQuiz.setTitle(quiz.getTitle());
+        existingQuiz.setQuestions(quiz.getQuestions());
         existingQuiz.setCategory(quiz.getCategory());
         existingQuiz.setDescription(quiz.getDescription());
 
