@@ -1,21 +1,45 @@
-POST http://localhost:8080/quizzes/1/answers
+PUT http://localhost:8080/quizzes/1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsImlhdCI6MTczMzgxNjQyNCwiZXhwIjoxNzMzODUyNDI0fQ.itbC-jhL3DsOPIcXDi9kUsf-lLGaqmmcem0ePtjRJUc
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsImlhdCI6MTczMzkwNjg2MywiZXhwIjoxNzMzOTQyODYzfQ.aQWA1fUGzUZ4_kFG867zi-R3mSPA_dy31NKA2a4xyZE
 
-[
-  {
-    "selectedOption": {
-      "id": 1
-    }
+{
+  "title": "Updated Quiz Title",
+  "description": "Updated description of the quiz",
+  "category": {
+    "id": 2
   },
-  {
-    "selectedOption": {
-      "id": 5
+  "questions": [
+    {
+      "id": 1,
+      "text": "Updated Question 1 Text",
+      "options": [
+        {
+          "id": 1,
+          "text": "Updated Option 1",
+          "is_correct": true
+        },
+        {
+          "id": 2,
+          "text": "Updated Option 2",
+          "is_correct": false
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "text": "Updated Question 2 Text",
+      "options": [
+        {
+          "id": 3,
+          "text": "Updated Option 1",
+          "is_correct": false
+        },
+        {
+          "id": 4,
+          "text": "Updated Option 2",
+          "is_correct": true
+        }
+      ]
     }
-  },
-  {
-    "selectedOption": {
-      "id": 9
-    }
-  }
-]
+  ]
+}

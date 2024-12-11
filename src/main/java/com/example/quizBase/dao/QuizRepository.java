@@ -143,20 +143,16 @@ public class QuizRepository {
         }
     }
 
+    @Transactional
     public void update(Quiz quiz){
-        Quiz existingQuiz = findById(quiz.getId());
-        if (existingQuiz == null) {
-            throw new EntityNotFoundException("Quiz with ID " + quiz.getId() + " not found");
+        try(Session session = sessionFactory.getCurrentSession()){
+            Transaction transaction = session.beginTransaction();
+            session.merge(quiz);
+            transaction.commit();
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException("Failed to update quiz");
         }
-
-        existingQuiz.setTitle(quiz.getTitle());
-        existingQuiz.setDescription(quiz.getDescription());
-        existingQuiz.setCategory(quiz.getCategory());
-        existingQuiz.setCreator(quiz.getCreator());
-        existingQuiz.setQuestions(quiz.getQuestions());
-        existingQuiz.setCreated_date(quiz.getCreated_date());
-
-         save(existingQuiz);
     }
     public void deleteById(Long id) {
         Transaction transaction = null;

@@ -33,7 +33,7 @@ public class Question {
         this.options = options;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

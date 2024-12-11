@@ -35,7 +35,7 @@ public class Option {
         this.quiz = quiz;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

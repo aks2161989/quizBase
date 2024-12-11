@@ -81,8 +81,19 @@ public class QuizService {
         quizRepository.save(quiz);
     }
 
+    @Transactional
     public void updateQuiz(Quiz quiz){
-        quizRepository.update(quiz);
+        Quiz existingQuiz = quizRepository.findById(quiz.getId());
+
+        if(existingQuiz == null){
+                throw  new IllegalArgumentException("Quiz with id " + quiz.getId() + " not found");
+        }
+        existingQuiz.setTitle(quiz.getTitle());
+        existingQuiz.setCategory(quiz.getCategory());
+        existingQuiz.setDescription(quiz.getDescription());
+
+        quizRepository.update(existingQuiz);
+
     }
     public void deleteQuiz(Long id){
         quizRepository.deleteById(id);

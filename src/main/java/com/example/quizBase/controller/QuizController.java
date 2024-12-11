@@ -83,17 +83,32 @@ public class QuizController {
         return ResponseEntity.ok("Quiz added successfully");
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateQuiz(@PathVariable @Min(1)  Long id, @Valid @RequestBody Quiz updatedQuiz, Principal principal) {
-        Quiz existingQuiz = quizService.findQuizById(id).get(); //Get the prexisting quiz
+    @PutMapping("/{quizId}")
+    public ResponseEntity<String> updateQuiz(@PathVariable Long quizId, @Valid
+    @RequestBody Quiz updatedQuiz, @RequestHeader("Authorization") String token) {
+       String username;
+       try{
+           if(token.startsWith("Bearer")){
+               token = token.substring(7);
+           }
+           username = jwtService.validateToken(token);
+       }catch (Exception e){
+           return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
+       }
 
-        //Check if the currently logged in user is the creator of the prexisting quiz
-        if(!existingQuiz.getCreator().getUsername().equals(principal.getName())){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only edit your own quizzes");
+       User user = userService.findUserByUsername(username).
+               orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Quiz existingQuiz = quizService.findQuizById(quizId).
+                orElseThrow(() -> new IllegalArgumentException("Quiz not found"));
+
+        if(!existingQuiz.getCreator().getUsername().equals(user.getUsername())){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only edit your own quiz.");
         }
 
-        updatedQuiz.setCreator(existingQuiz.getCreator());
+        updatedQuiz.setId(existingQuiz.getId());
         quizService.updateQuiz(updatedQuiz);
+
         return ResponseEntity.ok("Quiz updated successfully");
     }
     @DeleteMapping("/{id}")
