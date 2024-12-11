@@ -5,6 +5,10 @@ import com.example.quizBase.dao.ResponseRepository;
 import com.example.quizBase.dao.ResultRepository;
 import com.example.quizBase.models.*;
 import jakarta.transaction.Transactional;
+import org.hibernate.Hibernate;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.quizBase.dao.OptionRepository;
@@ -12,10 +16,8 @@ import com.example.quizBase.dao.OptionRepository;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -24,13 +26,17 @@ public class QuizService {
     private final OptionRepository optionRepository;
     private final ResponseRepository responseRepository;
     private final ResultRepository resultRepository;
+    private final SessionFactory sessionFactory;
 
     @Autowired
-    public QuizService(QuizRepository quizRepository, OptionRepository optionRepository, ResponseRepository responseRepository, ResultRepository resultRepository) {
+    public QuizService(QuizRepository quizRepository, OptionRepository optionRepository,
+                       ResponseRepository responseRepository, ResultRepository resultRepository,
+                       SessionFactory sessionFactory) {
         this.quizRepository = quizRepository;
         this.optionRepository = optionRepository;
         this.responseRepository = responseRepository;
         this.resultRepository = resultRepository;
+        this.sessionFactory = sessionFactory;
     }
 
 
@@ -88,13 +94,67 @@ public class QuizService {
         if(existingQuiz == null){
                 throw  new IllegalArgumentException("Quiz with id " + quiz.getId() + " not found");
         }
+
+        Transaction transaction = sessionFactory.getCurrentSession().beginTransaction();
+        sessionFactory.getCurrentSession().merge(existingQuiz);
+
+        Hibernate.initialize(existingQuiz.getQuestions());
+
         existingQuiz.setTitle(quiz.getTitle());
-        existingQuiz.setQuestions(quiz.getQuestions());
+       // existingQuiz.setQuestions(quiz.getQuestions());
         existingQuiz.setCategory(quiz.getCategory());
         existingQuiz.setDescription(quiz.getDescription());
 
-        quizRepository.update(existingQuiz);
 
+        // Remove questions & options from existing quiz that are not in quiz submitted in form, i.e. user wants to delete
+        for(Question question: quiz.getQuestions()) {
+
+            Optional<Question> questionInDb = existingQuiz.getQuestions()
+                    .stream()
+                    .filter(q -> q.getId().equals(question.getId()))
+                    .findAny();
+            if (questionInDb.isPresent()) {  // If a question is present
+                questionInDb.get().setText(question.getText());
+                questionInDb.get().setQuiz(question.getQuiz());
+
+                for (Option o : question.getOptions()) {
+                    Optional<Option> optionInDb = questionInDb.get().getOptions().
+                            stream().filter(option -> option.getId().equals(o.getId())).findAny();
+                    if (optionInDb.isPresent()) { //Option has not been deleted, so just update
+                        optionInDb.get().setIs_correct(o.getIs_correct());
+                        optionInDb.get().setText(o.getText());
+                    } else { // new option has been added by user
+                        Option optionNew = new Option(o.getQuestion(), o.getText(), o.getIs_correct(), o.getQuiz());
+                        questionInDb.get().getOptions().add(optionNew);
+                    }
+
+
+                }
+                List<Option> optionsToDelete = questionInDb.get().getOptions()
+                        .stream()
+                        .filter(o1 -> question.getOptions().stream().noneMatch(o2 -> o2.getId().equals(o1.getId())))
+                        .collect(Collectors.toList()); // identify options not in updated quiz
+                for (Option o : optionsToDelete) {
+                    questionInDb.get().getOptions().remove(o); // delete the option
+                }
+            } else { // If the current question does not exist in DB, add it
+                existingQuiz.getQuestions().add(question);
+            }
+        }
+
+        List<Question> questionsToDelete = existingQuiz.getQuestions()
+                .stream()
+                .filter(q1 -> quiz.getQuestions().stream().noneMatch(q2 -> q2.getId().equals(q1.getId())))
+                .collect(Collectors.toList());
+        // identify questions not in updated quiz
+        for (Question q : questionsToDelete) {
+            for(Option o: q.getOptions()){
+                q.getOptions().remove(o);
+            }
+            existingQuiz.getQuestions().remove(q); // delete the question
+        }
+        quizRepository.update(existingQuiz);
+transaction.commit();
     }
     public void deleteQuiz(Long id){
         quizRepository.deleteById(id);

@@ -27,8 +27,7 @@ public class Option {
     @JoinColumn(name="quiz_id", nullable = false)
     private Quiz quiz;
 
-    public Option(long id, Question question, String text, Boolean is_correct, Quiz quiz) {
-        this.id = id;
+    public Option(Question question, String text, Boolean is_correct, Quiz quiz) {
         this.question = question;
         this.text = text;
         this.is_correct = is_correct;

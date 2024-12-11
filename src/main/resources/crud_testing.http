@@ -1,6 +1,6 @@
 PUT http://localhost:8080/quizzes/1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsImlhdCI6MTczMzkwNjg2MywiZXhwIjoxNzMzOTQyODYzfQ.aQWA1fUGzUZ4_kFG867zi-R3mSPA_dy31NKA2a4xyZE
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsImlhdCI6MTczMzkzNTQ5MSwiZXhwIjoxNzMzOTcxNDkxfQ.6BWxoRl1UXLuJTLz_VWhdBntEzAuxj2B5ztbA50cRg4
 
 {
   "title": "Updated Quiz Title",
