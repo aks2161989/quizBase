@@ -156,7 +156,19 @@ public class QuizService {
         quizRepository.update(existingQuiz);
 transaction.commit();
     }
-    public void deleteQuiz(Long id){
+
+    @Transactional
+    public void deleteQuiz(Long id, String username){
+        Quiz quiz =  quizRepository.findById(id);
+
+        if(quiz == null) {
+            throw new IllegalArgumentException("No quiz found with the id " + id);
+        }
+
+        if(!quiz.getCreator().getUsername().equals(username)){
+            throw new IllegalArgumentException("You are not allowed to delete this quiz");
+        }
+
         quizRepository.deleteById(id);
     }
 

@@ -154,18 +154,20 @@ public class QuizRepository {
             throw new RuntimeException("Failed to update quiz");
         }
     }
+
+    @Transactional
     public void deleteById(Long id) {
-        Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
-            transaction = session.beginTransaction();
-            Quiz quiz = findById(id);
-            session.remove(quiz);
+           Transaction transaction = session.beginTransaction();
+            Quiz quiz = session.get(Quiz.class, id);
+            if(quiz != null) {
+                session.remove(quiz);
+            }
             transaction.commit();
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
+
             e.printStackTrace();
+            throw new RuntimeException("Failed to delete quiz");
         }
     }
 

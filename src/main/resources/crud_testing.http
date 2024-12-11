@@ -1,45 +1,4 @@
-PUT http://localhost:8080/quizzes/1
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsImlhdCI6MTczMzkzNTQ5MSwiZXhwIjoxNzMzOTcxNDkxfQ.6BWxoRl1UXLuJTLz_VWhdBntEzAuxj2B5ztbA50cRg4
+DELETE http://localhost:8080/quizzes/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsImlhdCI6MTczMzk1Mjc5MCwiZXhwIjoxNzMzOTg4NzkwfQ.MrMVXoSzDUAZoEdlDipZJ-VHRKpowjHObQfTtheQ2Yo
 
-{
-  "title": "Updated Quiz Title",
-  "description": "Updated description of the quiz",
-  "category": {
-    "id": 2
-  },
-  "questions": [
-    {
-      "id": 1,
-      "text": "Updated Question 1 Text",
-      "options": [
-        {
-          "id": 1,
-          "text": "Updated Option 1",
-          "is_correct": true
-        },
-        {
-          "id": 2,
-          "text": "Updated Option 2",
-          "is_correct": false
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "text": "Updated Question 2 Text",
-      "options": [
-        {
-          "id": 3,
-          "text": "Updated Option 1",
-          "is_correct": false
-        },
-        {
-          "id": 4,
-          "text": "Updated Option 2",
-          "is_correct": true
-        }
-      ]
-    }
-  ]
-}
+ 

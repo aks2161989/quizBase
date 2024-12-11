@@ -112,18 +112,32 @@ public class QuizController {
         return ResponseEntity.ok("Quiz updated successfully");
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteQuiz(@PathVariable @Min(1) Long id, Principal principal) {
+    public ResponseEntity<String> deleteQuiz(@PathVariable Long id, @RequestHeader("Authorization") String token) {
         // Find the preexisting quiz
-        Quiz existingQuiz = quizService.findQuizById(id).get();
-
-        //Check if the currently logged in user is the creator of the quiz
-        if(!existingQuiz.getCreator().getUsername().equals(principal.getName())){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only delete your own quizzes");
+        String username;
+        try {
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+            username = jwtService.validateToken(token);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).
+                    body("Invalid or expired token");
         }
 
-        quizService.deleteQuiz(id);
-        return ResponseEntity.ok("Quiz deleted successfully.");
+        try {
+            quizService.deleteQuiz(id, username);
+            return ResponseEntity.ok("Quiz deleted");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
+
+
+
+
+
+
 
     @PostMapping("/{quizId}/answers")
     public ResponseEntity<String> submitAnswers(@PathVariable Long quizId,
