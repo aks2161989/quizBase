@@ -3,10 +3,14 @@ package com.example.quizBase.controller;
 import com.example.quizBase.models.User;
 import com.example.quizBase.util.JwtService;
 import dto.LoginRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.example.quizBase.service.UserService;
 import io.jsonwebtoken.Jwts;
@@ -16,11 +20,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RestController
+@Controller
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
     private final JwtService jwtService;
+
 
     @Autowired
     public UserController(UserService userService, JwtService jwtService) {
@@ -77,29 +82,55 @@ public class UserController {
     }
 
 
-    @PostMapping("/signin")
-    public ResponseEntity<Map<String, String>> signIn(@RequestBody LoginRequest loginRequest) {
-        User authenticatedUser = userService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
-        if (authenticatedUser != null){
-            String token = jwtService.generateToken(authenticatedUser.getUsername());
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Welcome " + authenticatedUser.getUsername());
-            response.put("token", token);
+    @GetMapping("/login")
+    public String loginPage(){
+        return "login";
+    }
 
-            return ResponseEntity.ok(response);
-        }
-        else{
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials"));
+    @PostMapping("/signin")
+    public String signIn(@RequestParam String username,
+                         @RequestParam String password,
+                         HttpSession session,
+                         Model model) {
+        try{
+            User authenticatedUser = userService.authenticate(username, password);
+            String token = jwtService.generateToken(authenticatedUser.getUsername());
+
+            session.setAttribute("username", authenticatedUser.getUsername());
+            session.setAttribute("token", token);
+
+            return "redirect:/dashboard";
+        }catch (IllegalArgumentException e){
+            model.addAttribute("error", "Invalid username or password");
+            return "login";
         }
     }
 
+    @GetMapping("/register")
+    public String registerPage(){
+        return "register";
+    }
+
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody User user) {
-        try{
-                userService.registerUser(user);
-                return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully.");
-            }catch (IllegalArgumentException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    public String registerUser(@RequestParam String username,
+                                               @RequestParam String email,
+                                               @RequestParam String password,
+                                               @RequestParam String fullname,
+                                               Model model) {
+        try {
+         User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setFull_name(fullname);
+        user.setEmail(email);
+
+
+            userService.registerUser(user);
+            model.addAttribute("message", "Your account has been created");
+            return "redirect:/users/login";
+        }catch (IllegalArgumentException e){
+            model.addAttribute("error", e.getMessage());
+            return "redirect:users/register";
         }
     }
 

@@ -94,7 +94,7 @@ public class UserRepository {
         try {
             Optional<User> user = findByUsername(username.toLowerCase());
 
-            if (user.get() == null) {
+            if (!user.isPresent()) {
                 throw new IllegalArgumentException("Invalid username");
             }
 

@@ -16,11 +16,8 @@ public class HomeController {
         this.jwtService = jwtService;
     }
 
-    @GetMapping("/welcome")
-    public String welcomePage(Model model, @RequestParam(value = "token", required = false) String token){
-        String username = jwtService.validateToken(token.replace("Bearer ", ""));
-        model.addAttribute("username", username);
-        System.out.println("The username is "+ username);
-        return "welcome";
+    @GetMapping("/")
+    public String home(){
+        return "index";
     }
 }

@@ -54,7 +54,10 @@ public class HibernateUtil {
         settings.put("spring.thymeleaf.prefix", "classpath:/templates/");
         settings.put("spring.thymeleaf.suffix", ".html");
         settings.put("spring.thymeleaf.cache", false);
-
+        settings.put("server.servlet.context-path", "/");
+        settings.put("spring.mvc.view.prefix", "/templates/");
+        settings.put("spring.mvc.view.suffix", ".html");
+        settings.put("spring.web.resources.add-mappings", true);
 
         //settings.put("hibernate.connection.autocommit", "true");
 

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+<h1>Welcome, <span th:text="${username}">User</span>!</h1>
+<p>Choose an action:</p>
+<ul>
+    <li><a th:href="@{/quizzes/answer}">Answer Quiz</a></li>
+    <li><a th:href="@{/quizzes/create}">Create Quiz</a></li>
+    <li><a th:href="@{/categories/create}">Create Category</a></li>
+    <li><a th:href="@{/quizzes/your-quizzes}">Your Quizzes</a></li>
+</ul>
+</body>
+</html>
