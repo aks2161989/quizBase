@@ -1,10 +1,7 @@
-POST http://localhost:8080/categories
+POST http://localhost:8080/users/signin
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsImlhdCI6MTczNDAwOTYzMCwiZXhwIjoxNzM0MDQ1NjMwfQ.8fUwZPASXgCE2lSkFIRCmsAcKDAT93CtQDqidUG3-IA
 
 {
-  "name": "Travel",
-  "creator": {
-    "username": "john_doe"
-  }
+  "username": "john_doe",
+  "password": "password123"
 }

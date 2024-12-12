@@ -51,6 +51,9 @@ public class HibernateUtil {
         settings.put("spring.sql.init.data-locations", "classpath:import.sql");
         settings.put("hibernate.current_session_context_class", "thread");
         settings.put("current_session_context_class", "thread");
+        settings.put("spring.thymeleaf.prefix", "classpath:/templates/");
+        settings.put("spring.thymeleaf.suffix", ".html");
+        settings.put("spring.thymeleaf.cache", false);
 
 
         //settings.put("hibernate.connection.autocommit", "true");
