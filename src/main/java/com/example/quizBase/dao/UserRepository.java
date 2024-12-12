@@ -90,23 +90,17 @@ public class UserRepository {
         if (username == null || password == null) {
             throw new IllegalArgumentException("Username and password must not be null");
         }
+            Optional<User> optionalUser = findByUsername(username.toLowerCase());
 
-        try {
-            Optional<User> user = findByUsername(username.toLowerCase());
-
-            if (!user.isPresent()) {
-                throw new IllegalArgumentException("Invalid username");
+            if (!optionalUser.isPresent()) {
+                throw new IllegalArgumentException("Invalid username or password");
             }
 
-            if (Objects.equals(password, user.get().getPassword())) {
-                return user.get();
-            } else {
-                throw new IllegalArgumentException("Invalid password");
+            User user = optionalUser.get();
+            if (!password.equals(user.getPassword())) {
+                throw new IllegalArgumentException("Invalid username or password");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error validating user credentials");
-        }
+            return user;
     }
 
 }
