@@ -1,9 +1,13 @@
 package com.example.quizBase.controller;
 
 import com.example.quizBase.models.Category;
+import com.example.quizBase.models.User;
+import com.example.quizBase.service.UserService;
+import com.example.quizBase.util.JwtService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.quizBase.service.CategoryService;
@@ -14,10 +18,15 @@ import java.util.List;
 @RequestMapping("/categories")
 public class CategoryController {
     private final CategoryService categoryService;
+    private final JwtService jwtService;
+
+    private final UserService userService;
 
     @Autowired
-    public CategoryController(CategoryService categoryService) {
+    public CategoryController(CategoryService categoryService, JwtService jwtService, UserService userService) {
         this.categoryService = categoryService;
+        this.jwtService = jwtService;
+        this.userService = userService;
     }
 
     @GetMapping("/id/{id}")
@@ -42,11 +51,30 @@ public class CategoryController {
         return categories.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(categories);
     }
     @PostMapping
-    public ResponseEntity<String> createCategory(@Valid @RequestBody Category category) {
-        System.out.println("CategoryController: Received category: " + category);
-        categoryService.createCategory(category);
-        System.out.println("CategoryController: Persisted category: " + category);
-        return ResponseEntity.ok("Category added successfully");
+    public ResponseEntity<String> createCategory(@Valid @RequestBody Category category,
+                                                 @RequestHeader("Authorization") String token) {
+        String username;
+        try {
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+            username = jwtService.validateToken(token);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).
+                    body("Invalid or expired token");
+        }
+
+        User user = userService.findUserByUsername(username).
+                orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        category.setCreator(user);
+
+        try {
+            categoryService.createCategory(category, username);
+            return ResponseEntity.ok("Category created successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")

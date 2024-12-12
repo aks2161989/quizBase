@@ -15,11 +15,17 @@ public class Category {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User creator;
+
     public Category() {
     }
 
-    public Category(String name) {
+    public Category(String name, User user) {
+
         this.name = name;
+        this.creator = user;
     }
 
     public long getId() {
@@ -38,11 +44,20 @@ public class Category {
         this.name = name;
     }
 
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
+    }
+
     @Override
     public String toString() {
         return "Category{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", creator=" + creator +
                 '}';
     }
 }

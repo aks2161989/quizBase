@@ -58,16 +58,11 @@ public class CategoryRepository {
     @Transactional
     public void save(Category category) {
         Transaction transaction = null;
-        try (Session session = HibernateUtil.sessionFactory().getCurrentSession()) {
+        try (Session session = sessionFactory.getCurrentSession()) {
             transaction = session.beginTransaction();
-            System.out.println("Before saving to DB: " + category);
             session.persist(category);
-            System.out.println("After saving to DB: " + category);
             transaction.commit();
         } catch (Exception e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();
-            }
             e.printStackTrace();
         }
     }

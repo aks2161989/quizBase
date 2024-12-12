@@ -1,4 +1,10 @@
-DELETE http://localhost:8080/quizzes/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsImlhdCI6MTczMzk1Mjc5MCwiZXhwIjoxNzMzOTg4NzkwfQ.MrMVXoSzDUAZoEdlDipZJ-VHRKpowjHObQfTtheQ2Yo
+POST http://localhost:8080/categories
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huX2RvZSIsImlhdCI6MTczNDAwOTYzMCwiZXhwIjoxNzM0MDQ1NjMwfQ.8fUwZPASXgCE2lSkFIRCmsAcKDAT93CtQDqidUG3-IA
 
- 
+{
+  "name": "Travel",
+  "creator": {
+    "username": "john_doe"
+  }
+}
