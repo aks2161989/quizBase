@@ -1,6 +1,7 @@
 package com.example.quizBase.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,8 @@ public class Question {
     @Column(nullable = false)
     private String text;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @BatchSize(size = 10)
     private List<Option> options = new ArrayList<>();
 
     public Question() {

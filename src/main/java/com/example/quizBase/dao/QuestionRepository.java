@@ -1,5 +1,6 @@
 package com.example.quizBase.dao;
 
+import com.example.quizBase.models.Option;
 import com.example.quizBase.models.Question;
 import com.example.quizBase.models.Quiz;
 import jakarta.transaction.Transactional;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.lang.System.err;
 
@@ -90,4 +93,16 @@ public class QuestionRepository {
             e.printStackTrace();
         }
     }
+    public Map<Long, List<Option>> findOptionsForQuestions(List<Long> questionIds) {
+        try (Session session = sessionFactory.openSession()) {
+            String hql = "SELECT o FROM Option o WHERE o.question.id IN :questionIds";
+            List<Option> options = session.createQuery(hql, Option.class)
+                    .setParameter("questionIds", questionIds)
+                    .list();
+
+            // Group options by their question IDs
+            return options.stream().collect(Collectors.groupingBy(o -> o.getQuestion().getId()));
+        }
+    }
+
 }

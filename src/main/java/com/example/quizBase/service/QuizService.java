@@ -1,8 +1,6 @@
 package com.example.quizBase.service;
 
-import com.example.quizBase.dao.QuizRepository;
-import com.example.quizBase.dao.ResponseRepository;
-import com.example.quizBase.dao.ResultRepository;
+import com.example.quizBase.dao.*;
 import com.example.quizBase.models.*;
 import jakarta.transaction.Transactional;
 import org.hibernate.Hibernate;
@@ -11,7 +9,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.example.quizBase.dao.OptionRepository;
 
 
 import java.time.LocalDateTime;
@@ -28,15 +25,18 @@ public class QuizService {
     private final ResultRepository resultRepository;
     private final SessionFactory sessionFactory;
 
+    private final QuestionRepository questionRepository;
+
     @Autowired
     public QuizService(QuizRepository quizRepository, OptionRepository optionRepository,
                        ResponseRepository responseRepository, ResultRepository resultRepository,
-                       SessionFactory sessionFactory) {
+                       SessionFactory sessionFactory, QuestionRepository questionRepository) {
         this.quizRepository = quizRepository;
         this.optionRepository = optionRepository;
         this.responseRepository = responseRepository;
         this.resultRepository = resultRepository;
         this.sessionFactory = sessionFactory;
+        this.questionRepository = questionRepository;
     }
 
 
@@ -223,5 +223,72 @@ transaction.commit();
          result.setScore(score);
     }
 
+    public int evaluateQuiz(Long quizId, Map<Long, Long> answers, User user) {
+        Quiz quiz = findQuizById(quizId).orElseThrow(() -> new IllegalArgumentException("Quiz not found"));
+
+        int score = 0;
+        for (Map.Entry<Long, Long> entry : answers.entrySet()) {
+            Long questionId = entry.getKey();
+            Long selectedOptionId = entry.getValue();
+
+            Question question = quiz.getQuestions()
+                    .stream()
+                    .filter(q -> q.getId().equals(questionId))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid question ID"));
+
+            boolean isCorrect = question.getOptions()
+                    .stream()
+                    .anyMatch(o -> o.getId().equals(selectedOptionId) && o.getIs_correct());
+
+            if (isCorrect) {
+                score++;
+            }
+        }
+
+        Result result = new Result();
+        result.setQuiz(quiz);
+        result.setUser(user);
+        result.setScore(score);
+        result.setAttempted_date(new Date());
+        resultRepository.save(result);
+
+        return score;
     }
+    public Optional<Quiz> findQuizWithDetails(Long quizId) {
+        return quizRepository.findQuizWithQuestionsAndOptions(quizId);
+    }
+
+
+    @Transactional
+    public Quiz findQuizByIdWithQuestionsAndOptions(Long quizId) {
+        // Fetch quiz and its questions
+        Quiz quiz = quizRepository.findQuizByIdWithQuestions(quizId);
+        if (quiz != null) {
+            // Collect IDs of all questions in the quiz
+            List<Long> questionIds = quiz.getQuestions().stream()
+                    .map(Question::getId)
+                    .toList();
+
+            // Fetch options for all the questions in the quiz
+            Map<Long, List<Option>> optionsByQuestionId = questionRepository.findOptionsForQuestions(questionIds);
+
+            // Attach the fetched options to their respective questions
+            for (Question question : quiz.getQuestions()) {
+                question.setOptions(optionsByQuestionId.getOrDefault(question.getId(), new ArrayList<>()));
+            }
+        }
+        return quiz;
+    }
+
+    public Quiz findQuizByIdWithQuestions(Long quizId) {
+        try (Session session = sessionFactory.openSession()) {
+            String hql = "SELECT q FROM Quiz q JOIN FETCH q.questions WHERE q.id = :quizId";
+            return session.createQuery(hql, Quiz.class)
+                    .setParameter("quizId", quizId)
+                    .uniqueResult();
+        }
+    }
+
+}
 

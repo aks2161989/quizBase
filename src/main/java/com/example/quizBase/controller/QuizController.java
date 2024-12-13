@@ -1,5 +1,7 @@
 package com.example.quizBase.controller;
 
+import com.example.quizBase.dao.QuestionRepository;
+import com.example.quizBase.dao.QuizRepository;
 import com.example.quizBase.models.*;
 import com.example.quizBase.service.CategoryService;
 import com.example.quizBase.service.QuizService;
@@ -7,8 +9,11 @@ import com.example.quizBase.service.UserService;
 import com.example.quizBase.util.JwtService;
 import dto.QuizForm;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,15 +35,26 @@ public class QuizController {
     private final UserService userService;
     private final JwtService jwtService;
 
+    private final QuestionRepository questionRepository;
+
     private final CategoryService categoryService;
+
+    private final QuizRepository quizRepository;
+
+    private final SessionFactory sessionFactory;
     @Autowired
     public QuizController(QuizService quizService, UserService userService,
-                          JwtService jwtService, CategoryService categoryService)
+                          JwtService jwtService, CategoryService categoryService,
+                          QuestionRepository questionRepository, QuizRepository quizRepository,
+                          SessionFactory sessionFactory)
     {
         this.quizService = quizService;
         this.userService = userService;
         this.jwtService = jwtService;
         this.categoryService = categoryService;
+        this.questionRepository = questionRepository;
+        this.quizRepository = quizRepository;
+        this.sessionFactory = sessionFactory;
     }
 
     @GetMapping("/{id}")
@@ -117,20 +133,6 @@ public class QuizController {
             return "redirect:/users/login";
         }
 
-        /*
-        quiz.setCreator(creator);
-        if (quiz.getQuestions() != null) {
-            for (Question question : quiz.getQuestions()) {
-                question.setQuiz(quiz);
-                if (question.getOptions() != null) {
-                    for (Option option : question.getOptions()) {
-                        option.setQuestion(question);
-                        option.setQuiz(quiz);
-                    }
-                }
-            }
-        } */
-
         if(result.hasErrors()){
             model.addAttribute("categories", categoryService.findAllCategories());
             model.addAttribute("error", "Please correct the errors in the form");
@@ -206,26 +208,67 @@ public class QuizController {
 
 
 
-    @PostMapping("/{quizId}/answers")
-    public ResponseEntity<String> submitAnswers(@PathVariable Long quizId,
-                                                @RequestBody List<Response> responses,
-                                                @RequestHeader("Authorization")String token) {
-        String username;
-        try {
-            if (token.startsWith("Bearer ")) {
-                token = token.substring(7);
-            }
-            username = jwtService.validateToken(token);
-        } catch(Exception e){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid or expired token");
+    @GetMapping("/answer/{quizId}")
+    public String answerQuiz(@PathVariable Long quizId, Model model, HttpSession session) {
+
+        String token = (String) session.getAttribute("token");
+        if (token == null) {
+            return "redirect:/users/login";
         }
 
-        User user = userService.findUserByUsername(username)
-                        .orElseThrow(() -> new IllegalArgumentException("user not found"));
-        quizService.submitAnswers(quizId, user, responses);
+        try {
 
-        return ResponseEntity.ok("Answers submitted successfully");
+            String username = jwtService.validateToken(token);
+
+
+            Quiz quiz = quizService.findQuizByIdWithQuestionsAndOptions(quizId);
+
+            if (quiz == null) {
+                model.addAttribute("error", "Quiz not found");
+                return "redirect:/dashboard";
+            }
+
+
+            model.addAttribute("quiz", quiz);
+            model.addAttribute("username", username);
+
+            return "answerquiz";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/users/login";
+        }
     }
 
 
+    @PostMapping("/submit")
+    public String submitQuiz(@RequestParam Long quizId,
+                             @RequestParam Map<Long, Long> answers, // Question ID -> Option ID
+                             HttpSession session, Model model) {
+        String token = (String) session.getAttribute("token");
+        if (token == null) {
+            return "redirect:/users/login";
+        }
+
+        try {
+            String username = jwtService.validateToken(token);
+            User user = userService.findUserByUsername(username).orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+            int score = quizService.evaluateQuiz(quizId, answers, user);
+
+            model.addAttribute("score", score);
+            return "result";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "An unexpected error occurred.");
+            return "error";
+        }
     }
+
+
+
+
+
+}

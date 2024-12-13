@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.System.err;
 
@@ -170,5 +171,40 @@ public class QuizRepository {
             throw new RuntimeException("Failed to delete quiz");
         }
     }
+
+    public Optional<Quiz> findQuizWithQuestionsAndOptions(Long quizId) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Quiz> query = session.createQuery(
+                    "SELECT q FROM Quiz q " +
+                            "LEFT JOIN FETCH q.questions qu " +
+                            "LEFT JOIN FETCH qu.options " +
+                            "WHERE q.id = :quizId",
+                    Quiz.class
+            );
+            query.setParameter("quizId", quizId);
+            return Optional.ofNullable(query.uniqueResult());
+        }
+    }
+    public Optional<Quiz> findQuizById(Long quizId) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Quiz> query = session.createQuery(
+                    "FROM Quiz q WHERE q.id = :quizId",
+                    Quiz.class
+            );
+            query.setParameter("quizId", quizId);
+            return Optional.ofNullable(query.uniqueResult());
+        }
+    }
+    public Quiz findQuizByIdWithQuestions(Long quizId) {
+        try (Session session = sessionFactory.openSession()) {
+            String hql = "SELECT q FROM Quiz q JOIN FETCH q.questions WHERE q.id = :quizId";
+            return session.createQuery(hql, Quiz.class)
+                    .setParameter("quizId", quizId)
+                    .uniqueResult();
+        }
+    }
+
+
+
 
 }
