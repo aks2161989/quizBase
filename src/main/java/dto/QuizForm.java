@@ -59,6 +59,8 @@ public class QuizForm {
             question.setText(questionForm.getText());
             question.setQuiz(quiz);
 
+            questionForm.markCorrectOption();
+
             for(OptionForm optionForm: questionForm.getOptions()){
                 Option option = new Option();
                 option.setText(optionForm.getText());

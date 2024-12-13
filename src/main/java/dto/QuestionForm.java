@@ -20,11 +20,27 @@ public class QuestionForm {
         this.text = text;
     }
 
+    private int correctOption;
+
+
     public List<OptionForm> getOptions() {
         return options;
     }
 
     public void setOptions(List<OptionForm> options) {
         this.options = options;
+    }
+
+    public int getCorrectOption() {
+        return correctOption;
+    }
+
+    public void setCorrectOption(int correctOption) {
+        this.correctOption = correctOption;
+    }
+    public void markCorrectOption() {
+        for (int i = 0; i < options.size(); i++) {
+            options.get(i).setCorrect(i == correctOption);
+        }
     }
 }

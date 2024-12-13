@@ -108,7 +108,7 @@ public class QuizController {
     }
 
     @PostMapping("/createaquiz")
-    public String createQuiz(@Valid QuizForm quizForm,
+    public String createQuiz(@Valid @ModelAttribute QuizForm quizForm,
                               BindingResult result,
                               HttpSession session, Model model) {
 
@@ -139,10 +139,12 @@ public class QuizController {
         try{
             String username = jwtService.validateToken(token);
             User creator = userService.findUserByUsername(username).get();
+            System.out.println("Category Name from Form: " + quizForm.getCategoryName());
 
-            quizService.createQuiz(quizForm.toQuiz(creator, categoryService.findCategoryByName(quizForm.getCategoryName()).get()));
+            quizService.createQuiz(quizForm.toQuiz(creator, categoryService.findCategoryById(Long.parseLong(quizForm.getCategoryName())).get()));
             return "redirect:/dashboard";
         }catch (Exception e){
+            e.printStackTrace();
             model.addAttribute("error", "An unexpected error occurred. please try again");
             return "createquiz";
         }

@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>Create a New Quiz</h1>
-<form th:action="@{/quizzes/create}" method="post">
+<form th:action="@{/quizzes/createaquiz}" method="post">
     <label for="title">Title:</label>
     <input type="text" id="title" name="title" required><br>
 
@@ -14,8 +14,8 @@
     <textarea id="description" name="description" required></textarea><br>
 
     <label for="category">Category:</label>
-    <select id="category" name="categoryId" required>
-        <option value="">Select Category</option>
+    <select id="category" name="categoryName" required>
+    <option value="">Select Category</option>
         <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
     </select><br>
 
