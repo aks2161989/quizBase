@@ -1,9 +1,11 @@
 package com.example.quizBase.controller;
 
 import com.example.quizBase.models.*;
+import com.example.quizBase.service.CategoryService;
 import com.example.quizBase.service.QuizService;
 import com.example.quizBase.service.UserService;
 import com.example.quizBase.util.JwtService;
+import dto.QuizForm;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -12,9 +14,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -26,12 +30,15 @@ public class QuizController {
     private final UserService userService;
     private final JwtService jwtService;
 
+    private final CategoryService categoryService;
     @Autowired
-    public QuizController(QuizService quizService, UserService userService, JwtService jwtService)
+    public QuizController(QuizService quizService, UserService userService,
+                          JwtService jwtService, CategoryService categoryService)
     {
         this.quizService = quizService;
         this.userService = userService;
         this.jwtService = jwtService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping("/{id}")
@@ -83,11 +90,34 @@ public class QuizController {
             return "redirect:/users/login";
         }
     }
-    @PostMapping
-    public ResponseEntity<String> createQuiz(@Valid @RequestBody Quiz quiz) {
-        User creator = userService.findUserByUsername(quiz.getCreator().getUsername()).
-                orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+    @GetMapping("/create")
+    public String create(Model model, HttpSession session){
+        String token = (String) session.getAttribute("token");
+        if(token == null){
+            return "redirect:/users/login";
+        }
+        try {
+            String username = jwtService.validateToken(token);
+            List<Category> categories = categoryService.findAllCategories();
+            model.addAttribute("categories", categories);
+            return "createquiz";
+        }catch(Exception e){
+            return "redirect:/users/login";
+        }
+    }
+
+    @PostMapping("/createaquiz")
+    public String createQuiz(@Valid QuizForm quizForm,
+                              BindingResult result,
+                              HttpSession session, Model model) {
+
+        String token = (String) session.getAttribute("token");
+        if(token == null){
+            return "redirect:/users/login";
+        }
+
+        /*
         quiz.setCreator(creator);
         if (quiz.getQuestions() != null) {
             for (Question question : quiz.getQuestions()) {
@@ -99,9 +129,23 @@ public class QuizController {
                     }
                 }
             }
+        } */
+
+        if(result.hasErrors()){
+            model.addAttribute("categories", categoryService.findAllCategories());
+            model.addAttribute("error", "Please correct the errors in the form");
+            return "createquiz";
         }
-        quizService.createQuiz(quiz);
-        return ResponseEntity.ok("Quiz added successfully");
+        try{
+            String username = jwtService.validateToken(token);
+            User creator = userService.findUserByUsername(username).get();
+
+            quizService.createQuiz(quizForm.toQuiz(creator, categoryService.findCategoryByName(quizForm.getCategoryName()).get()));
+            return "redirect:/dashboard";
+        }catch (Exception e){
+            model.addAttribute("error", "An unexpected error occurred. please try again");
+            return "createquiz";
+        }
     }
 
     @PutMapping("/{quizId}")

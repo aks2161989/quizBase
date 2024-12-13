@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create Quiz</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<h1>Create a New Quiz</h1>
+<form th:action="@{/quizzes/create}" method="post">
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" required><br>
+
+    <label for="description">Description:</label>
+    <textarea id="description" name="description" required></textarea><br>
+
+    <label for="category">Category:</label>
+    <select id="category" name="categoryId" required>
+        <option value="">Select Category</option>
+        <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+    </select><br>
+
+    <div id="questions">
+        <div class="question">
+            <label for="question-0">Question:</label>
+            <input type="text" id="question-0" name="questions[0].text" required><br>
+
+            <label>Options:</label>
+            <ul>
+                <li>
+                    <input type="text" name="questions[0].options[0].text" required>
+                    <input type="radio" name="questions[0].correctOption" value="0" required> Correct
+                </li>
+                <li>
+                    <input type="text" name="questions[0].options[1].text" required>
+                    <input type="radio" name="questions[0].correctOption" value="1"> Correct
+                </li>
+                <li>
+                    <input type="text" name="questions[0].options[2].text" required>
+                    <input type="radio" name="questions[0].correctOption" value="2"> Correct
+                </li>
+                <li>
+                    <input type="text" name="questions[0].options[3].text" required>
+                    <input type="radio" name="questions[0].correctOption" value="3"> Correct
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <button type="button" id="add-question">Add Question</button>
+    <button type="submit">Submit Quiz</button>
+</form>
+
+<script>
+    let questionIndex = 1;
+    $('#add-question').click(function () {
+        $('#questions').append(`
+            <div class="question">
+                <label for="question-${questionIndex}">Question:</label>
+                <input type="text" id="question-${questionIndex}" name="questions[${questionIndex}].text" required><br>
+                <label>Options:</label>
+                <ul>
+                    <li>
+                        <input type="text" name="questions[${questionIndex}].options[0].text" required>
+                        <input type="radio" name="questions[${questionIndex}].correctOption" value="0" required> Correct
+                    </li>
+                    <li>
+                        <input type="text" name="questions[${questionIndex}].options[1].text" required>
+                        <input type="radio" name="questions[${questionIndex}].correctOption" value="1"> Correct
+                    </li>
+                    <li>
+                        <input type="text" name="questions[${questionIndex}].options[2].text" required>
+                        <input type="radio" name="questions[${questionIndex}].correctOption" value="2"> Correct
+                    </li>
+                    <li>
+                        <input type="text" name="questions[${questionIndex}].options[3].text" required>
+                        <input type="radio" name="questions[${questionIndex}].correctOption" value="3"> Correct
+                    </li>
+                </ul>
+            </div>
+        `);
+        questionIndex++;
+    });
+</script>
+</body>
+</html>
