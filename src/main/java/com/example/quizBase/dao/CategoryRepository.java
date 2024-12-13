@@ -64,6 +64,7 @@ public class CategoryRepository {
             transaction.commit();
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("Error saving category");
         }
     }
 

@@ -4,17 +4,20 @@ import com.example.quizBase.models.Category;
 import com.example.quizBase.models.User;
 import com.example.quizBase.service.UserService;
 import com.example.quizBase.util.JwtService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.example.quizBase.service.CategoryService;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/categories")
 public class CategoryController {
     private final CategoryService categoryService;
@@ -50,31 +53,43 @@ public class CategoryController {
         List<Category> categories = categoryService.findAllCategories();
         return categories.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(categories);
     }
-    @PostMapping
-    public ResponseEntity<String> createCategory(@Valid @RequestBody Category category,
-                                                 @RequestHeader("Authorization") String token) {
-        String username;
+
+    @GetMapping("/create")
+    public String showCreateCategoryPage(HttpSession session, Model model) {
+        String token = (String) session.getAttribute("token");
+
+        if(token == null){
+            return "redirect:/users/login";
+        }
+        try{
+            String username = jwtService.validateToken(token);
+            model.addAttribute("category", new Category());
+            model.addAttribute("username", username);
+            return "createcategory";
+        }catch(Exception e){
+            return "redirect:/users/login";
+        }
+    }
+        @PostMapping("/create/submit")
+    public String createCategory(@ModelAttribute Category category, HttpSession session, Model model) {
+        String token = (String) session.getAttribute("token");
+        if(token == null){
+            return "redirect:/users/login";
+        }
         try {
-            if (token.startsWith("Bearer ")) {
-                token = token.substring(7);
-            }
-            username = jwtService.validateToken(token);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).
-                    body("Invalid or expired token");
+            String username = jwtService.validateToken(token);
+            User user = userService.findUserByUsername(username).get();
+            category.setCreator(user);
+            categoryService.createCategory(category);
+            return "redirect:/dashboard";
+        }catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            return "createcategory";
+        } catch(Exception e){
+            model.addAttribute("error", e.getMessage());
+            return "redirect:/users/login";
         }
 
-        User user = userService.findUserByUsername(username).
-                orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        category.setCreator(user);
-
-        try {
-            categoryService.createCategory(category, username);
-            return ResponseEntity.ok("Category created successfully");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
     }
 
     @PutMapping("/{id}")

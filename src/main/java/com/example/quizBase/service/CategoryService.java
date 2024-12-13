@@ -35,12 +35,11 @@ public class CategoryService {
         return categories != null ? categories : Collections.emptyList();
     }
     @Transactional
-    public void createCategory(Category category, String username){
+    public void createCategory(Category category){
 
-        if(category.getCreator() == null ||!category.getCreator().getUsername().equals(username)){
-            throw new IllegalArgumentException("You are not allowed to create this category");
+        if(category.getName() == null || category.getName().isEmpty()){
+            throw new IllegalArgumentException("Category name cannot be empty");
         }
-
         categoryRepository.save(category);
     }
     public void updateCategory(Category category){
