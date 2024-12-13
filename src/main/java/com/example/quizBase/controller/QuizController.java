@@ -180,27 +180,26 @@ public class QuizController {
 
         return ResponseEntity.ok("Quiz updated successfully");
     }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteQuiz(@PathVariable Long id, @RequestHeader("Authorization") String token) {
-        // Find the preexisting quiz
-        String username;
-        try {
-            if (token.startsWith("Bearer ")) {
-                token = token.substring(7);
-            }
-            username = jwtService.validateToken(token);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).
-                    body("Invalid or expired token");
+    @PostMapping("/delete")
+    public String deleteQuiz(@RequestParam Long quizId, HttpSession session, Model model) {
+        String token = (String) session.getAttribute("token");
+        if (token == null) {
+            return "redirect:/users/login";
         }
 
         try {
-            quizService.deleteQuiz(id, username);
-            return ResponseEntity.ok("Quiz deleted");
+            String username = jwtService.validateToken(token);
+            quizService.deleteQuiz(quizId, username);
+            model.addAttribute("successMessage", "Quiz deleted successfully.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            model.addAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "An unexpected error occurred while deleting the quiz.");
         }
+
+        return "redirect:/quizzes/your-quizzes";
     }
+
 
 
 
@@ -264,6 +263,26 @@ public class QuizController {
             e.printStackTrace();
             model.addAttribute("error", "An unexpected error occurred.");
             return "error";
+        }
+    }
+    @GetMapping("/your-quizzes")
+    public String getUserQuizzes(Model model, HttpSession session) {
+        String token = (String) session.getAttribute("token");
+        if (token == null) {
+            return "redirect:/users/login";
+        }
+
+        try {
+            String username = jwtService.validateToken(token);
+            User user = userService.findUserByUsername(username)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            List<Quiz> userQuizzes = quizService.findQuizzesByCreator(user.getId());
+            model.addAttribute("userQuizzes", userQuizzes);
+            model.addAttribute("username", username);
+            return "dashboard";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/users/login";
         }
     }
 

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
@@ -14,5 +13,18 @@
     <li><a th:href="@{/categories/create}">Create Category</a></li>
     <li><a th:href="@{/quizzes/your-quizzes}">Your Quizzes</a></li>
 </ul>
+
+<div th:if="${userQuizzes != null}">
+    <h2>Your Quizzes</h2>
+    <ul>
+        <li th:each="quiz : ${userQuizzes}">
+            <span th:text="${quiz.title}"></span>
+            <form th:action="@{/quizzes/delete}" method="post" style="display: inline;">
+                <input type="hidden" name="quizId" th:value="${quiz.id}" />
+                <button type="submit">Delete</button>
+            </form>
+        </li>
+    </ul>
+</div>
 </body>
 </html>

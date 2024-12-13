@@ -162,20 +162,16 @@ public class QuizService {
 transaction.commit();
     }
 
-    @Transactional
-    public void deleteQuiz(Long id, String username){
-        Quiz quiz =  quizRepository.findById(id);
+    public void deleteQuiz(Long quizId, String username) {
+        Quiz quiz = quizRepository.findById(quizId);
 
-        if(quiz == null) {
-            throw new IllegalArgumentException("No quiz found with the id " + id);
+        if (!quiz.getCreator().getUsername().equals(username)) {
+            throw new IllegalArgumentException("You can only delete quizzes you created.");
         }
 
-        if(!quiz.getCreator().getUsername().equals(username)){
-            throw new IllegalArgumentException("You are not allowed to delete this quiz");
-        }
-
-        quizRepository.deleteById(id);
+        quizRepository.deleteById(quiz.getId());
     }
+
 
     @Transactional
     public void submitAnswers(Long quizId, User user, List<Response> responses) {
