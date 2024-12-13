@@ -81,6 +81,11 @@ public class QuizService {
         List<Quiz> quizzes = quizRepository.findAllQuizzes();
         return quizzes != null ? quizzes : Collections.emptyList();
     }
+    public Map<Category, List<Quiz>> groupQuizzesByCategory(){
+        List<Quiz> quizzes = findAllQuizzes();
+        Map<Category, List<Quiz>> quizMap = quizzes.stream().collect(Collectors.groupingBy(quiz -> quiz.getCategory()));
+        return quizMap;
+    }
 
     @Transactional
     public void createQuiz(Quiz quiz){

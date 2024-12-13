@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Available Quizzes</title>
+</head>
+<body>
+<h1>Available Quizzes</h1>
+<div th:if="${quizzesByCategory != null}">
+    <div th:each="entry : ${quizzesByCategory}">
+        <h2 th:text="${entry.key.name}"></h2>
+        <ul>
+            <li th:each="quiz : ${entry.value}">
+                <a th:href="@{/quizzes/answer/{id}(id=${quiz.id})}"
+                   th:text="${quiz.title}"></a> <!-- Quiz Title -->
+                <p th:text="${quiz.description}"></p>
+            </li>
+        </ul>
+    </div>
+</div>
+<div th:if="${quizzesByCategory == null}">
+    <p>No quizzes available.</p>
+</div>
+</body>
+</html>
