@@ -5,7 +5,8 @@
 </head>
 <body>
 <h1>Quiz Result</h1>
-<p>Your score: <span th:text="${score}"></span></p>
+<p>Your score: <span th:text="${score}"></span> / <span th:text="${total}"></span></p>
+<p th:text="${score} + ' correct, ' + (${total} - ${score} - ${unanswered}) + ' incorrect, ' + ${unanswered} + ' unanswered'"></p>
 <a href="/dashboard">Back to Dashboard</a>
 </body>
 </html>

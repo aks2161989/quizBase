@@ -25,12 +25,17 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Controller
 @RequestMapping("/quizzes")
 public class QuizController {
+    private static final Pattern ANSWER_PARAM = Pattern.compile("answers\\[(\\d+)]");
+
     private final QuizService quizService;
     private final UserService userService;
     private final JwtService jwtService;
@@ -180,6 +185,51 @@ public class QuizController {
 
         return ResponseEntity.ok("Quiz updated successfully");
     }
+    @GetMapping("/edit/{quizId}")
+    public String editQuizPage(@PathVariable Long quizId, Model model, HttpSession session) {
+        String token = (String) session.getAttribute("token");
+        if (token == null) {
+            return "redirect:/users/login";
+        }
+        try {
+            String username = jwtService.validateToken(token);
+            Quiz quiz = quizService.findQuizByIdWithQuestionsAndOptions(quizId);
+            if (quiz == null || !quiz.getCreator().getUsername().equals(username)) {
+                return "redirect:/quizzes/your-quizzes";
+            }
+            model.addAttribute("quiz", quiz);
+            model.addAttribute("categories", categoryService.findAllCategories());
+            return "editquiz";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "redirect:/users/login";
+        }
+    }
+
+    @PostMapping("/edit/{quizId}")
+    public String editQuiz(@PathVariable Long quizId, @ModelAttribute QuizForm quizForm,
+                           HttpSession session, Model model) {
+        String token = (String) session.getAttribute("token");
+        if (token == null) {
+            return "redirect:/users/login";
+        }
+        try {
+            String username = jwtService.validateToken(token);
+            User creator = userService.findUserByUsername(username).orElseThrow(() -> new IllegalArgumentException("User not found"));
+            Category category = categoryService.findCategoryById(Long.parseLong(quizForm.getCategoryName()))
+                    .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+            quizService.editQuiz(quizId, username, quizForm.toQuiz(creator, category));
+            return "redirect:/quizzes/your-quizzes";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "An unexpected error occurred while editing the quiz.");
+            return "error";
+        }
+    }
+
     @PostMapping("/delete")
     public String deleteQuiz(@RequestParam Long quizId, HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
@@ -241,7 +291,7 @@ public class QuizController {
 
     @PostMapping("/submit")
     public String submitQuiz(@RequestParam Long quizId,
-                             @RequestParam Map<Long, Long> answers, // Question ID -> Option ID
+                             @RequestParam Map<String, String> params, // includes "answers[<questionId>]" -> optionId
                              HttpSession session, Model model) {
         String token = (String) session.getAttribute("token");
         if (token == null) {
@@ -249,12 +299,23 @@ public class QuizController {
         }
 
         try {
+            Map<Long, Long> answers = new HashMap<>(); // Question ID -> Option ID
+            for (Map.Entry<String, String> param : params.entrySet()) {
+                Matcher m = ANSWER_PARAM.matcher(param.getKey());
+                if (m.matches()) {
+                    answers.put(Long.valueOf(m.group(1)), Long.valueOf(param.getValue()));
+                }
+            }
+
             String username = jwtService.validateToken(token);
             User user = userService.findUserByUsername(username).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
             int score = quizService.evaluateQuiz(quizId, answers, user);
 
+            int total = quizService.findQuizByIdWithQuestionsAndOptions(quizId).getQuestions().size();
             model.addAttribute("score", score);
+            model.addAttribute("total", total);
+            model.addAttribute("unanswered", total - answers.size());
             return "result";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());

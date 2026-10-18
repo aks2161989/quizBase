@@ -1,6 +1,8 @@
 package com.example.quizBase.dao;
 
 import com.example.quizBase.models.Category;
+import com.example.quizBase.models.Option;
+import com.example.quizBase.models.Question;
 import com.example.quizBase.models.Quiz;
 import com.example.quizBase.models.User;
 import com.example.quizBase.util.HibernateUtil;
@@ -153,6 +155,37 @@ public class QuizRepository {
         }catch (Exception e){
             e.printStackTrace();
             throw new RuntimeException("Failed to update quiz");
+        }
+    }
+
+    /** Replaces a quiz's title, description, category and all questions/options with those of {@code updated}. */
+    public void replaceContent(Long quizId, Quiz updated) {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            try {
+                Quiz quiz = session.get(Quiz.class, quizId);
+                if (quiz == null) {
+                    throw new IllegalArgumentException("Quiz not found");
+                }
+                quiz.setTitle(updated.getTitle());
+                quiz.setDescription(updated.getDescription());
+                quiz.setCategory(updated.getCategory());
+
+                quiz.getQuestions().clear(); // orphanRemoval deletes the old questions and options
+                for (Question question : updated.getQuestions()) {
+                    question.setQuiz(quiz);
+                    for (Option option : question.getOptions()) {
+                        option.setQuiz(quiz);
+                    }
+                    quiz.getQuestions().add(question);
+                }
+                transaction.commit();
+            } catch (RuntimeException e) {
+                if (transaction.isActive()) {
+                    transaction.rollback();
+                }
+                throw e;
+            }
         }
     }
 

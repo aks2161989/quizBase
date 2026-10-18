@@ -135,11 +135,13 @@ public class ResultRepository {
     }
     @Transactional
     public void save(Result result){
-        try(Session session = sessionFactory.getCurrentSession()){
+        try(Session session = sessionFactory.openSession()){
             Transaction transaction = session.beginTransaction();
             session.persist(result);
+            transaction.commit();
         }catch (Exception e){
             e.printStackTrace();
+            throw new RuntimeException("Failed to save result", e);
         }
     }
 }

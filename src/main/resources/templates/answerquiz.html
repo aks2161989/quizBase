@@ -15,7 +15,7 @@
     <ul>
       <li th:each="option : ${question.options}">
         <input type="radio" th:name="${'answers[' + question.id + ']'}"
-               th:value="${option.id}" required />
+               th:value="${option.id}" />
         <span th:text="${option.text}"></span>
       </li>
     </ul>

@@ -162,6 +162,17 @@ public class QuizService {
 transaction.commit();
     }
 
+    public void editQuiz(Long quizId, String username, Quiz updated) {
+        Quiz quiz = quizRepository.findById(quizId);
+        if (quiz == null) {
+            throw new IllegalArgumentException("Quiz not found");
+        }
+        if (!quiz.getCreator().getUsername().equals(username)) {
+            throw new IllegalArgumentException("You can only edit quizzes you created.");
+        }
+        quizRepository.replaceContent(quizId, updated);
+    }
+
     public void deleteQuiz(Long quizId, String username) {
         Quiz quiz = quizRepository.findById(quizId);
 
@@ -220,7 +231,10 @@ transaction.commit();
     }
 
     public int evaluateQuiz(Long quizId, Map<Long, Long> answers, User user) {
-        Quiz quiz = findQuizById(quizId).orElseThrow(() -> new IllegalArgumentException("Quiz not found"));
+        Quiz quiz = findQuizByIdWithQuestionsAndOptions(quizId);
+        if (quiz == null) {
+            throw new IllegalArgumentException("Quiz not found");
+        }
 
         int score = 0;
         for (Map.Entry<Long, Long> entry : answers.entrySet()) {

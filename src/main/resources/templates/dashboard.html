@@ -6,6 +6,9 @@
 </head>
 <body>
 <h1>Welcome, <span th:text="${username}">User</span>!</h1>
+<form th:action="@{/users/logout}" method="post" style="float: right;">
+    <button type="submit">Logout</button>
+</form>
 <p>Choose an action:</p>
 <ul>
     <li><a th:href="@{/quizzes/listallquizzes}">Answer Quiz</a></li>
@@ -19,6 +22,7 @@
     <ul>
         <li th:each="quiz : ${userQuizzes}">
             <span th:text="${quiz.title}"></span>
+            <a th:href="@{/quizzes/edit/{id}(id=${quiz.id})}">Edit</a>
             <form th:action="@{/quizzes/delete}" method="post" style="display: inline;">
                 <input type="hidden" name="quizId" th:value="${quiz.id}" />
                 <button type="submit">Delete</button>
