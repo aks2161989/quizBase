@@ -1,13 +1,16 @@
 package org.example.quizbase;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-@SpringBootTest
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 class QuizBaseApplicationTests {
 
     @Test
-    void contextLoads() {
+    void testPasswordEncoderMatches() {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hash = encoder.encode("password123");
+        assertTrue(encoder.matches("password123", hash));
     }
-
 }

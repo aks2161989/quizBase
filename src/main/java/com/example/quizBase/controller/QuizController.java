@@ -1,7 +1,5 @@
 package com.example.quizBase.controller;
 
-import com.example.quizBase.dao.QuestionRepository;
-import com.example.quizBase.dao.QuizRepository;
 import com.example.quizBase.models.*;
 import com.example.quizBase.service.CategoryService;
 import com.example.quizBase.service.QuizService;
@@ -12,8 +10,6 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,27 +35,16 @@ public class QuizController {
     private final QuizService quizService;
     private final UserService userService;
     private final JwtService jwtService;
-
-    private final QuestionRepository questionRepository;
-
     private final CategoryService categoryService;
 
-    private final QuizRepository quizRepository;
-
-    private final SessionFactory sessionFactory;
     @Autowired
     public QuizController(QuizService quizService, UserService userService,
-                          JwtService jwtService, CategoryService categoryService,
-                          QuestionRepository questionRepository, QuizRepository quizRepository,
-                          SessionFactory sessionFactory)
+                          JwtService jwtService, CategoryService categoryService)
     {
         this.quizService = quizService;
         this.userService = userService;
         this.jwtService = jwtService;
         this.categoryService = categoryService;
-        this.questionRepository = questionRepository;
-        this.quizRepository = quizRepository;
-        this.sessionFactory = sessionFactory;
     }
 
     @GetMapping("/{id}")

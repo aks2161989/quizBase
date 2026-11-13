@@ -2,7 +2,6 @@ package com.example.quizBase.dao;
 
 import com.example.quizBase.models.Category;
 import com.example.quizBase.models.Quiz;
-import com.example.quizBase.util.HibernateUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.hibernate.Session;
@@ -47,7 +46,7 @@ public class CategoryRepository {
     }
     public List<Category> findAllCategories(){
         try(Session session = sessionFactory.openSession()){
-            return session.createQuery("from Category", Category.class).list();
+            return session.createQuery("select distinct c from Category c left join fetch c.creator", Category.class).list();
         }
         catch (Exception e){
             e.printStackTrace(err);

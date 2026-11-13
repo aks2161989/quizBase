@@ -5,17 +5,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-# Build
+# Build Backend
 ./mvnw clean package
 
-# Run (dev)
+# Run Spring Boot (dev)
 ./mvnw spring-boot:run
 
 # Run tests
 ./mvnw test
 
 # Run a single test class
-./mvnw test -Dtest=QuizBaseApplicationTests
+./mvnw test -Dtest=QuizRestControllerTest
+
+# Angular Frontend (under frontend/)
+cd frontend
+npm start        # Runs Angular on http://localhost:4200
+npm run build    # Production build into frontend/dist/frontend
 ```
 
 ## Database Setup
@@ -62,4 +67,10 @@ MySQL (quizbase database)
 
 ## Active Development State
 
-Quiz submission / answer evaluation was the most recently worked area (see git log). The `QuizController` and `QuizService.evaluateQuiz()` are the primary places to look when working on answer flow. The HTTP test file at `src/main/resources/crud_testing.http` can be used to test API endpoints directly.
+- **Phase 1 (Security & Architecture)**: BCrypt password hashing, RBAC, externalized properties, centralized `AuthInterceptor`, and unit tests completed.
+- **Phase 1.5 (Modern Angular 18 SPA)**: Built Angular 18 frontend in `frontend/` with Bootstrap 5.3 + Bootstrap Icons. Implemented REST API controllers (`AuthRestController`, `QuizRestController`, `CategoryRestController`, `DashboardRestController`) and DTOs (`com.example.quizBase.dto`). Added CORS and preflight handling. All 17 unit tests pass.
+- **Next Phase**: Phase 2 (Enterprise Patterns & Quality: `@ControllerAdvice` global error handling, AOP performance monitoring & auditing, and extended MockMvc test suite).
+
+## AI Assistant Directives
+
+> **Important Directive:** Whenever the user asks "what is next?" or asks what to do next, you MUST remind the user to test the frontend thoroughly first (testing login/register, quiz taking and scoring, quiz creation/editing, and categories) before proceeding to Phase 2 tasks.

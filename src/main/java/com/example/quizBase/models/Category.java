@@ -15,8 +15,8 @@ public class Category {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = true)
     private User creator;
 
     public Category() {
@@ -28,7 +28,7 @@ public class Category {
         this.creator = user;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

@@ -5,7 +5,6 @@ import com.example.quizBase.models.Option;
 import com.example.quizBase.models.Question;
 import com.example.quizBase.models.Quiz;
 import com.example.quizBase.models.User;
-import com.example.quizBase.util.HibernateUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.hibernate.Session;
@@ -134,7 +133,7 @@ public class QuizRepository {
     @Transactional
     public void save(Quiz quiz){
         Transaction transaction = null;
-        try(Session session = HibernateUtil.sessionFactory().getCurrentSession()){
+        try(Session session = sessionFactory.openSession()){
             transaction = session.beginTransaction();
             session.persist(quiz);
             transaction.commit();
@@ -143,6 +142,7 @@ public class QuizRepository {
                 transaction.rollback();
             }
             e.printStackTrace();
+            throw new RuntimeException("Failed to save quiz", e);
         }
     }
 
@@ -172,10 +172,12 @@ public class QuizRepository {
                 quiz.setCategory(updated.getCategory());
 
                 quiz.getQuestions().clear(); // orphanRemoval deletes the old questions and options
+                session.flush();
                 for (Question question : updated.getQuestions()) {
                     question.setQuiz(quiz);
                     for (Option option : question.getOptions()) {
                         option.setQuiz(quiz);
+                        option.setQuestion(question);
                     }
                     quiz.getQuestions().add(question);
                 }

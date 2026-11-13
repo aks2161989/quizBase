@@ -19,6 +19,12 @@
     <label for="fullname" >Full name:</label>
     <input th:type="text" id="fullname" name="fullname" required >
     <br>
+    <label for="role">Register as:</label>
+    <select id="role" name="role">
+        <option value="ROLE_STUDENT" selected>Student</option>
+        <option value="ROLE_INSTRUCTOR">Instructor</option>
+    </select>
+    <br><br>
     <button type="submit">Register</button>
 </form>
 <p th:if="${message}" th:text="${message}"></p>

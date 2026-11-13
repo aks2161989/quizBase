@@ -25,8 +25,12 @@ public class User {
     @Column(nullable = false)
     private String full_name;
 
-@OneToMany (mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
-private List<Quiz> quizzesCreated = new ArrayList<>();
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.ROLE_STUDENT;
+
+    @OneToMany (mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Quiz> quizzesCreated = new ArrayList<>();
 
     public User() {
     }
@@ -37,6 +41,16 @@ private List<Quiz> quizzesCreated = new ArrayList<>();
         this.password = password;
         this.email = email;
         this.full_name = full_name;
+        this.role = Role.ROLE_STUDENT;
+    }
+
+    public User(long id, String username, String password, String email, String full_name, Role role) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.full_name = full_name;
+        this.role = role != null ? role : Role.ROLE_STUDENT;
     }
 
     public List<Quiz> getQuizzesCreated() {
@@ -87,15 +101,23 @@ private List<Quiz> quizzesCreated = new ArrayList<>();
         this.full_name = full_name;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role != null ? role : Role.ROLE_STUDENT;
+    }
+
 
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", full_name='" + full_name + '\'' +
+                ", role=" + role +
                 '}';
     }
 }

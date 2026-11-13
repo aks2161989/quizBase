@@ -5,7 +5,6 @@ import com.example.quizBase.util.JwtService;
 import dto.LoginRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.example.quizBase.service.UserService;
-import io.jsonwebtoken.Jwts;
 
 
 import java.util.HashMap;
@@ -119,24 +117,29 @@ public class UserController {
 
     @PostMapping("/register")
     public String registerUser(@RequestParam String username,
-                                               @RequestParam String email,
-                                               @RequestParam String password,
-                                               @RequestParam String fullname,
-                                               Model model) {
+                               @RequestParam String email,
+                               @RequestParam String password,
+                               @RequestParam String fullname,
+                               @RequestParam(required = false, defaultValue = "ROLE_STUDENT") String role,
+                               Model model) {
         try {
-         User user = new User();
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setFull_name(fullname);
-        user.setEmail(email);
-
+            User user = new User();
+            user.setUsername(username);
+            user.setPassword(password);
+            user.setFull_name(fullname);
+            user.setEmail(email);
+            try {
+                user.setRole(com.example.quizBase.models.Role.valueOf(role));
+            } catch (Exception e) {
+                user.setRole(com.example.quizBase.models.Role.ROLE_STUDENT);
+            }
 
             userService.registerUser(user);
             model.addAttribute("message", "Your account has been created");
             return "redirect:/users/login";
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
-            return "redirect:users/register";
+            return "register";
         }
     }
 

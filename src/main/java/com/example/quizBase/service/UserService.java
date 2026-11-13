@@ -3,6 +3,7 @@ package com.example.quizBase.service;
 import com.example.quizBase.dao.UserRepository;
 import com.example.quizBase.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -13,10 +14,12 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Optional<User> findUserById(Long id) {
@@ -59,34 +62,44 @@ public class UserService {
         userRepository.save(user);
     }
     public User authenticate(String username, String password) {
-        if (username == null) {
-            throw new IllegalArgumentException("Username cannot be null");
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be null or empty");
         }
-        if (password == null) {
-            throw new IllegalArgumentException("Password cannot be null");
+        if (password == null || password.trim().isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be null or empty");
         }
         username = username.toLowerCase();
 
-        User user = userRepository.findByUsernameAndPassword(username, password);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
 
-        if (user == null) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("Invalid username or password");
         }
         return user;
     }
 
     public void registerUser(User user) {
+        if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be blank");
+        }
         if(userRepository.findByUsername(user.getUsername()).isPresent()){
             throw new IllegalArgumentException("This username already exists. Please choose another");
+        }
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+            throw new IllegalArgumentException("Email cannot be blank");
         }
         if(userRepository.findByEmail(user.getEmail()).isPresent()){
             throw new IllegalArgumentException("This Email is already in use");
         }
-        if(user.getFull_name() == null){
+        if(user.getFull_name() == null || user.getFull_name().trim().isEmpty()){
             throw new IllegalArgumentException("Full name cannot be blank");
         }
+        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be blank");
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         this.createUser(user);
-
     }
 
 
